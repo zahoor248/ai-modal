@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const poppins = Poppins({
+const poppins = Poppins({   
   subsets: ["latin"],
   variable: "--font-poppins",
   weight: ["300", "400", "500", "600", "700"],
