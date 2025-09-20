@@ -1,28 +1,47 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ThemeSwitcher } from "@/components/theme-switcher"
-import { BookOpen, Plus, TrendingUp, Eye, Heart, Award, Star, Sparkles, Calendar, Edit3 } from "lucide-react"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import {
+  BookOpen,
+  Plus,
+  TrendingUp,
+  Eye,
+  Heart,
+  Award,
+  Star,
+  Sparkles,
+  Calendar,
+  Edit3,
+} from "lucide-react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
 interface DashboardStats {
-  totalStories: number
-  totalViews: number
-  totalLikes: number
-  weeklyCreated: number
+  totalStories: number;
+  totalViews: number;
+  totalLikes: number;
+  weeklyCreated: number;
 }
 
 interface StoryMetric {
-  id: string
-  title: string
-  views: number
-  likes: number
-  createdAt: string
-  template: string
-  readTime: number
+  id: string;
+  title: string;
+  views: number;
+  likes: number;
+  createdAt: string;
+  template: string;
+  readTime: number;
 }
 
 export default function Dashboard() {
@@ -31,11 +50,18 @@ export default function Dashboard() {
     totalViews: 0,
     totalLikes: 0,
     weeklyCreated: 0,
-  })
+  });
 
-  const [recentStories, setRecentStories] = useState<StoryMetric[]>([])
-  const [topStories, setTopStories] = useState<StoryMetric[]>([])
-  const [editedStories, setEditedStories] = useState<StoryMetric[]>([])
+  const [recentStories, setRecentStories] = useState<StoryMetric[]>([]);
+  const [topStories, setTopStories] = useState<StoryMetric[]>([]);
+  const [editedStories, setEditedStories] = useState<StoryMetric[]>([]);
+  const supabase = createClientComponentClient();
+  const router = useRouter();
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login"); // redirect after logout
+  };
 
   useEffect(() => {
     // Mock data - in real app this would come from API
@@ -44,7 +70,7 @@ export default function Dashboard() {
       totalViews: 1247,
       totalLikes: 189,
       weeklyCreated: 3,
-    })
+    });
 
     const mockRecentStories: StoryMetric[] = [
       {
@@ -74,7 +100,7 @@ export default function Dashboard() {
         template: "inspirational",
         readTime: 4,
       },
-    ]
+    ];
 
     const mockTopStories: StoryMetric[] = [
       {
@@ -104,7 +130,7 @@ export default function Dashboard() {
         template: "inspirational",
         readTime: 4,
       },
-    ]
+    ];
 
     const mockEditedStories: StoryMetric[] = [
       {
@@ -125,32 +151,32 @@ export default function Dashboard() {
         template: "adventure",
         readTime: 7,
       },
-    ]
+    ];
 
-    setRecentStories(mockRecentStories)
-    setTopStories(mockTopStories)
-    setEditedStories(mockEditedStories)
-  }, [])
+    setRecentStories(mockRecentStories);
+    setTopStories(mockTopStories);
+    setEditedStories(mockEditedStories);
+  }, []);
 
   const getTemplateColor = (template: string) => {
     switch (template) {
       case "kids":
-        return "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200";
       case "adventure":
-        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200";
       case "inspirational":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,24 +187,36 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
                 <BookOpen className="h-6 w-6 text-primary" />
-                <span className="font-serif text-xl font-bold text-foreground">StoryWeaver</span>
+                <span className="font-serif text-xl font-bold text-foreground">
+                  StoryWeaver
+                </span>
               </Link>
               <nav className="hidden md:flex items-center space-x-6">
                 <Link href="/dashboard" className="text-primary font-medium">
                   Dashboard
                 </Link>
-                <Link href="/generate" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/generate"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Create
                 </Link>
-                <Link href="/shelf" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/bucket"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   My Shelf
                 </Link>
-                <Link href="/community" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/community"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Community
                 </Link>
               </nav>
             </div>
             <ThemeSwitcher />
+            <button className="text-neutral-700" onClick={logout}>Logout</button>
           </div>
         </div>
       </header>
@@ -186,20 +224,28 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back, Storyteller!</h1>
-          <p className="text-muted-foreground">Ready to create your next magical story?</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Welcome back, Storyteller!
+          </h1>
+          <p className="text-muted-foreground">
+            Ready to create your next magical story?
+          </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Stories</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Stories
+              </CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalStories}</div>
-              <p className="text-xs text-muted-foreground">+{stats.weeklyCreated} this week</p>
+              <p className="text-xs text-muted-foreground">
+                +{stats.weeklyCreated} this week
+              </p>
             </CardContent>
           </Card>
 
@@ -209,8 +255,12 @@ export default function Dashboard() {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Across all stories</p>
+              <div className="text-2xl font-bold">
+                {stats.totalViews.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Across all stories
+              </p>
             </CardContent>
           </Card>
 
@@ -221,13 +271,17 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalLikes}</div>
-              <p className="text-xs text-muted-foreground">Community appreciation</p>
+              <p className="text-xs text-muted-foreground">
+                Community appreciation
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Achievements</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Achievements
+              </CardTitle>
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -247,7 +301,8 @@ export default function Dashboard() {
                   Ready to create something magical?
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Let your imagination run wild with our AI-powered story generator
+                  Let your imagination run wild with our AI-powered story
+                  generator
                 </p>
                 <Link href="/generate">
                   <Button size="lg" className="bg-primary hover:bg-primary/90">
@@ -290,10 +345,15 @@ export default function Dashboard() {
                       {story.title}
                     </Link>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className={getTemplateColor(story.template)}>
+                      <Badge
+                        variant="secondary"
+                        className={getTemplateColor(story.template)}
+                      >
                         {story.template}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">{story.readTime} min read</span>
+                      <span className="text-xs text-muted-foreground">
+                        {story.readTime} min read
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -334,10 +394,15 @@ export default function Dashboard() {
                       {story.title}
                     </Link>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className={getTemplateColor(story.template)}>
+                      <Badge
+                        variant="secondary"
+                        className={getTemplateColor(story.template)}
+                      >
                         {story.template}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">Edited {formatDate(story.createdAt)}</span>
+                      <span className="text-xs text-muted-foreground">
+                        Edited {formatDate(story.createdAt)}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -363,12 +428,17 @@ export default function Dashboard() {
               <TrendingUp className="h-5 w-5 text-primary" />
               Top Performing Stories
             </CardTitle>
-            <CardDescription>Your most popular stories by views and engagement</CardDescription>
+            <CardDescription>
+              Your most popular stories by views and engagement
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {topStories.map((story, index) => (
-                <div key={story.id} className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors relative">
+                <div
+                  key={story.id}
+                  className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors relative"
+                >
                   {index < 3 && (
                     <div className="absolute -top-2 -right-2">
                       <div
@@ -376,8 +446,8 @@ export default function Dashboard() {
                           index === 0
                             ? "bg-yellow-500 text-white"
                             : index === 1
-                              ? "bg-gray-400 text-white"
-                              : "bg-amber-600 text-white"
+                            ? "bg-gray-400 text-white"
+                            : "bg-amber-600 text-white"
                         }`}
                       >
                         {index + 1}
@@ -391,10 +461,15 @@ export default function Dashboard() {
                     {story.title}
                   </Link>
                   <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary" className={getTemplateColor(story.template)}>
+                    <Badge
+                      variant="secondary"
+                      className={getTemplateColor(story.template)}
+                    >
                       {story.template}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{story.readTime} min read</span>
+                    <span className="text-xs text-muted-foreground">
+                      {story.readTime} min read
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
@@ -419,7 +494,9 @@ export default function Dashboard() {
               <Award className="h-5 w-5 text-primary" />
               Awards & Achievements
             </CardTitle>
-            <CardDescription>Your storytelling milestones and badges</CardDescription>
+            <CardDescription>
+              Your storytelling milestones and badges
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -429,7 +506,9 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h4 className="font-medium text-foreground">First Story</h4>
-                  <p className="text-xs text-muted-foreground">Created your first story</p>
+                  <p className="text-xs text-muted-foreground">
+                    Created your first story
+                  </p>
                 </div>
               </div>
 
@@ -438,8 +517,12 @@ export default function Dashboard() {
                   <Heart className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground">Community Favorite</h4>
-                  <p className="text-xs text-muted-foreground">Received 100+ likes</p>
+                  <h4 className="font-medium text-foreground">
+                    Community Favorite
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Received 100+ likes
+                  </p>
                 </div>
               </div>
 
@@ -448,8 +531,12 @@ export default function Dashboard() {
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground">Trending Author</h4>
-                  <p className="text-xs text-muted-foreground">Story reached trending</p>
+                  <h4 className="font-medium text-foreground">
+                    Trending Author
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Story reached trending
+                  </p>
                 </div>
               </div>
             </div>
@@ -457,5 +544,5 @@ export default function Dashboard() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

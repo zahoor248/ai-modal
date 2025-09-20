@@ -54,18 +54,18 @@ export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu  >
+      <DropdownMenuTrigger asChild className="relative">
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90"
+          className="gap-2 bg-background/80 text-neutral-700 backdrop-blur-sm border-border/50 hover:bg-background/90"
         >
           <Palette className="h-4 w-4" />
           Theme
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="absolute w-48">
         {themes.map((themeOption) => (
           <DropdownMenuItem
             key={themeOption.name}

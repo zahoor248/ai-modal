@@ -1,46 +1,131 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sparkles, ArrowLeft, Loader2, Clock } from "lucide-react"
-import Link from "next/link"
-import { StoryDisplay } from "@/components/story-display"
-import { generateMockStory } from "@/lib/mock-api"
-import { TemplateSelector } from "@/components/template-selector"
-import { ThemeSwitcher } from "@/components/theme-switcher"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Sparkles, ArrowLeft, Loader2, Clock } from "lucide-react";
+import Link from "next/link";
+import { StoryDisplay } from "@/components/story-display";
+import { generateMockStory } from "@/lib/mock-api";
+import { TemplateSelector } from "@/components/template-selector";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { generateStory } from "@/lib/story-api";
+import { buildFullPrompt } from "@/lib/ai-prompts";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function GeneratePage() {
-  const [selectedTemplate, setSelectedTemplate] = useState<{ category: string; type: string } | null>(null)
-  const [prompt, setPrompt] = useState<string>("")
-  const [storyLength, setStoryLength] = useState<string>("medium")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedStory, setGeneratedStory] = useState<any>(null)
+  const supabase = createClientComponentClient();
+  const [selectedTemplate, setSelectedTemplate] = useState<{
+    category: string;
+    type: string;
+  } | null>(null);
+  const [prompt, setPrompt] = useState<string>("");
+  const [storyLength, setStoryLength] = useState<string>("medium");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedStory, setGeneratedStory] = useState<any>(null);
 
   const handleGenerate = async () => {
-    if (!selectedTemplate || !prompt.trim()) return
+    if (!selectedTemplate || !prompt.trim()) return;
 
-    setIsGenerating(true)
+    const fullPrompt = buildFullPrompt({
+      selectedTemplate,
+      storyLength,
+      userPrompt: prompt,
+    });
+    setIsGenerating(true);
+    // const res = generateStory("hi");
+    // console.log(res, " here is res");
+    // ✅ call your streaming API
+    const resp = await fetch("/api/v1/story/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullPrompt, mode: "stream" }),
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    if (!resp.ok || !resp.body) {
+      setIsGenerating(false);
+      throw new Error("Failed to generate story");
+    }
 
-    const story = generateMockStory(selectedTemplate.category, prompt, storyLength)
-    setGeneratedStory(story)
-    setIsGenerating(false)
-  }
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let fullStory = "";
+
+    // stream reading loop
+    // stream reading loop
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+
+      // Each chunk may contain multiple JSON objects (split by newlines)
+      const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+      for (const line of lines) {
+        try {
+          const parsed = JSON.parse(line);
+          if (parsed.response) {
+            console.log(parsed.response, "parsed response")
+            // 🧹 Clean reasoning tags here
+            const clean = parsed.response.replace(
+              /<think>[\s\S]*?<\/think>/g,
+              ""
+            );
+
+            fullStory += clean;
+            setGeneratedStory((prev) => ({
+              ...prev,
+              content: (prev?.content || "") + clean, // ✅ append clean chunk
+            }));
+          }
+        } catch (err) {
+          console.warn("Non-JSON chunk:", line);
+        }
+      }
+    }
+
+    setIsGenerating(false);
+    // ✅ only save if story has content
+    if (fullStory?.trim().length > 0) {
+      await fetch("/api/v1/story/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          story: fullStory,
+          prompt,
+          storyLength,
+          selectedTemplate,
+        }),
+      });
+    } else {
+      console.error("Skipping save: story is empty");
+    }
+  };
 
   const handleReset = () => {
-    setGeneratedStory(null)
-    setSelectedTemplate(null)
-    setPrompt("")
-    setStoryLength("medium")
-  }
+    setGeneratedStory(null);
+    setSelectedTemplate(null);
+    setPrompt("");
+    setStoryLength("medium");
+  };
 
   if (generatedStory) {
-    return <StoryDisplay story={generatedStory} onReset={handleReset} />
+    return (
+      <StoryDisplay
+        story={generatedStory}
+        onReset={handleReset}
+        isGenerating={isGenerating}
+      />
+    );
   }
 
   return (
@@ -64,18 +149,26 @@ export default function GeneratePage() {
         </div>
 
         {/* Generator Form */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-full mx-auto">
           <Card className="card-shadow border-0 bg-card">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="font-serif text-3xl text-balance">What story shall we create today?</CardTitle>
+              <CardTitle className="font-serif text-3xl text-balance">
+                What story shall we create today?
+              </CardTitle>
               <p className="text-muted-foreground text-pretty">
-                Choose a template and share your ideas. Our AI will craft a beautiful, personalized story just for you.
+                Choose a template and share your ideas. Our AI will craft a
+                beautiful, personalized story just for you.
               </p>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="space-y-4">
-                <Label className="text-base font-medium">Choose Your Story Type</Label>
-                <TemplateSelector selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
+                <Label className="text-base font-medium">
+                  Choose Your Story Type
+                </Label>
+                <TemplateSelector
+                  selectedTemplate={selectedTemplate}
+                  onTemplateSelect={setSelectedTemplate}
+                />
               </div>
 
               {/* Story Length Selector */}
@@ -100,7 +193,9 @@ export default function GeneratePage() {
                     <SelectItem value="medium">
                       <div className="flex flex-col items-start">
                         <span className="font-medium">Medium Story</span>
-                        <span className="text-xs text-muted-foreground">3-5 min read • Balanced narrative</span>
+                        <span className="text-xs text-muted-foreground">
+                          3-5 min read • Balanced narrative
+                        </span>
                       </div>
                     </SelectItem>
                     <SelectItem value="long">
@@ -127,7 +222,9 @@ export default function GeneratePage() {
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-32 resize-none"
                 />
-                <p className="text-sm text-muted-foreground">{prompt.length}/500 characters</p>
+                <p className="text-sm text-muted-foreground">
+                  {prompt.length}/500 characters
+                </p>
               </div>
 
               {/* Generate Button */}
@@ -168,5 +265,5 @@ export default function GeneratePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

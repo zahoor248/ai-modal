@@ -1,24 +1,62 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { BookOpen, Search, Plus, Calendar, Heart, ArrowLeft, Sparkles } from "lucide-react"
-import { mockShelfStories } from "@/lib/mock-data"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  BookOpen,
+  Search,
+  Plus,
+  Calendar,
+  Heart,
+  ArrowLeft,
+  Sparkles,
+} from "lucide-react";
+import { mockShelfStories } from "@/lib/mock-data";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function ShelfPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [stories] = useState(mockShelfStories)
+  const supabase = createClientComponentClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stories, setStories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const filteredStories = stories.filter(
     (story) =>
-      story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      story.template.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      story.story_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      story.template.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  useEffect(() => {
+    const fetchStories = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("stories")
+        .select("*")
+        .order("created_at", { ascending: false }); // newest first
 
+      if (error) {
+        console.error("Error fetching stories:", error);
+      } else {
+        const processedStories = data.map((story) => ({
+          ...story,
+          preview: story.content?.slice(0, 150) || "", // first 150 chars
+          readTime: Math.max(
+            1,
+            Math.ceil((story.content?.split(" ").length || 0) / 200)
+          ), // ~200 wpm
+        }));
+        console.log(processedStories, "test");
+        setStories(processedStories || []);
+      }
+      setLoading(false);
+    };
+
+    fetchStories();
+  }, []);
+console.log(filteredStories)
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-8">
@@ -58,7 +96,10 @@ export default function ShelfPage() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>{stories.length} stories</span>
             <span>•</span>
-            <span>{stories.reduce((acc, story) => acc + story.readTime, 0)} min total reading</span>
+            <span>
+              {stories.reduce((acc, story) => acc + story.readTime, 0)} min
+              total reading
+            </span>
           </div>
         </div>
 
@@ -71,17 +112,22 @@ export default function ShelfPage() {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="secondary" className="text-xs">
-                        {story.template.charAt(0).toUpperCase() + story.template.slice(1)}
+                        {story.template?.charAt(0).toUpperCase() +
+                          story.template?.slice(1)}
                       </Badge>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="w-3 h-3" />
                         {new Date(story.createdAt).toLocaleDateString()}
                       </div>
                     </div>
-                    <CardTitle className="font-serif text-xl text-balance line-clamp-2">{story.title}</CardTitle>
+                    <CardTitle className="font-serif text-xl text-balance line-clamp-2">
+                      {story.story_title}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <p className="text-muted-foreground text-sm text-pretty line-clamp-3 mb-4">{story.preview}</p>
+                    <p className="text-muted-foreground text-sm text-pretty line-clamp-3 mb-4">
+                      {story.preview}
+                    </p>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <BookOpen className="w-3 h-3" />
@@ -127,5 +173,5 @@ export default function ShelfPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

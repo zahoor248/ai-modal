@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -186,7 +187,35 @@
   --sidebar-border: oklch(0.18 0 0);
   --sidebar-ring: oklch(0.78 0.18 85 / 0.5);
 }
+.icecream {
+  --background: #fff7fb;
+  --foreground: #3b2f2f;
 
+  --card: #ffe9f2;
+  --card-foreground: #3b2f2f;
+
+  --popover: #fff7fb;
+  --popover-foreground: #3b2f2f;
+
+  --primary: #ff6f91; /* Strawberry */
+  --primary-foreground: #ffffff;
+
+  --secondary: #ffd166; /* Vanilla */
+  --secondary-foreground: #3b2f2f;
+
+  --muted: #cce2ff; /* Blueberry */
+  --muted-foreground: #3b2f2f;
+
+  --accent: #b5e48c; /* Mint */
+  --accent-foreground: #3b2f2f;
+
+  --destructive: #ff4d6d;
+  --destructive-foreground: #ffffff;
+
+  --border: #fbc4d6;
+  --input: #ffdfe7;
+  --ring: #ff6f91;
+}
 @theme inline {
   /* Updated font variables to use new premium fonts */
   --font-sans: var(--font-poppins);
@@ -281,37 +310,176 @@
   }
 }
 
-/* color base */
-:root{
-  --bg-ink: rgb(8,7,23);
+
+:root {
+  --ink: #060416;
+  --surface: #e6eef8;
 }
 
-/* body background */
-body { 
-  background: radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.09), transparent 8%),
-              radial-gradient(1000px 500px at 90% 90%, rgba(236,72,153,0.06), transparent 8%),
-              #06040b;
-  color: #e6eef8;
+/* page base */
+body {
+  background: radial-gradient(800px 400px at 10% 10%, rgba(99,102,241,0.08), transparent 8%),
+              radial-gradient(600px 300px at 90% 90%, rgba(236,72,153,0.06), transparent 10%),
+              var(--ink);
+  color: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* font helpers */
-.font-playfair { font-family: var(--font-playfair), serif; }
-.font-inter { font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+/* font helpers from next/font */
+.font-fredoka { font-family: var(--font-fredoka), system-ui, -apple-system; }
+.font-poppins { font-family: var(--font-poppins), system-ui, -apple-system; }
 
-/* small utilities for glass look */
+/* glass */
 .bg-glass {
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   backdrop-filter: blur(6px);
 }
 
-/* line clamp helper if not included already */
+/* subtle utility */
+.border-ghost { border: 1px solid rgba(255,255,255,0.06); }
+
+/* small helpers */
 .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* tweak scrollbar for theme */
-::-webkit-scrollbar { height: 8px; width: 8px; }
-::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border-radius: 8px; }
+/* override scrollbars lightly */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 8px; }
 
-/* small responsive tweaks */
-@media (max-width: 768px) {
-  h1 { font-size: 2.1rem; }
+/* responsive tweaks */
+@media (max-width: 640px) {
+  h1 { font-size: 1.8rem; }
+}
+
+.sansation-light {
+  font-family: "Sansation", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.sansation-regular {
+  font-family: "Sansation", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sansation-bold {
+  font-family: "Sansation", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.sansation-light-italic {
+  font-family: "Sansation", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.sansation-regular-italic {
+  font-family: "Sansation", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.sansation-bold-italic {
+  font-family: "Sansation", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+
+
+/* From Uiverse.io by zjssun */ 
+.button-primary {
+  position: relative;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #7d2ae8;
+  transition: all 0.2s ease;
+}
+
+.button-primary:hover {
+  transform: scale(0.96);
+}
+
+.button-primary:before,
+.button-primary:after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+
+.button-primary:active:before {
+  top: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #7d2ae8 20%, transparent 30%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
+    10% 10%, 18% 18%;
+  background-position: 50% 120%;
+  animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
+      40% 90%, 55% 90%, 70% 90%;
+  }
+
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
+      50% 50%, 65% 20%, 90% 30%;
+  }
+
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
+      50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+.button-primary:active::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+  background-position: 50% 0%;
+  animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
+      70% -10%, 70% 0%;
+  }
+
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
+      105% 0%;
+  }
+
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
+      110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
 }
