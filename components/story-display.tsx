@@ -289,9 +289,13 @@ export function StoryDisplay({
                     {currentStory.content ? (
                       <div className="relative">
                         <div className="animate-pulse opacity-80">
-                          {currentStory.content.split('\n\n').map((paragraph, index) => (
+
+                          
+                          {/* {currentStory.content.split('\n\n').map((paragraph, index) => (
                             <p key={index} className="mb-4 last:mb-0 leading-relaxed">{paragraph}</p>
-                          ))}
+                          ))} */}
+
+                          {currentStory.content}
                         </div>
                         <div className="flex items-center justify-center mt-6">
                           <div className="flex gap-1">
@@ -320,6 +324,9 @@ export function StoryDisplay({
                         {paragraph}
                       </p>
                     ))}
+
+
+                    
                   </div>
                 )}
               </div>
