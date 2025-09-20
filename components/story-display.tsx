@@ -92,15 +92,35 @@ export function StoryDisplay({
   };
 
   const handleShare = async () => {
+    const shareData = {
+      title: `"${currentStory.title}" - StoryBuds`,
+      text: `Check out this amazing story: "${currentStory.title}" - ${currentStory.content.substring(0, 100)}...`,
+      url: window.location.href,
+    };
+
     if (navigator.share) {
-      await navigator.share({
-        title: currentStory.title,
-        text: currentStory.content.substring(0, 100) + "...",
-        url: window.location.href,
-      });
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
     } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href);
+      // Enhanced fallback with multiple options
+      try {
+        await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`);
+        // Could show a toast notification here
+        alert('Story link copied to clipboard!');
+      } catch (err) {
+        // Fallback to fallback - create a shareable text
+        const shareText = `${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`;
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Story details copied to clipboard!');
+      }
     }
   };
 
@@ -190,9 +210,6 @@ export function StoryDisplay({
 
         {/* Story Content */}
         <div className="max-w-4xl mx-auto">
-          {isGenerating
-            ? "Please wait while we complete the story for you"
-            : "Done ready to read"}
           <Card className="card-shadow border-0 bg-card mb-8">
             <CardHeader className="text-center pb-6">
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -202,8 +219,8 @@ export function StoryDisplay({
                   Story
                 </Badge>
               </div>
-              <h1 className="story-title text-4xl md:text-5xl mb-4">
-                {currentStory.title}
+              <h1 className="story-title text-4xl md:text-5xl mb-4 font-serif leading-tight">
+                {currentStory.title || "Your Story"}
               </h1>
               <p className="text-muted-foreground">
                 Created on{" "}
@@ -211,17 +228,45 @@ export function StoryDisplay({
               </p>
             </CardHeader>
             <CardContent className="px-8 pb-8">
-              {/* Once thinking is done, show the content after </think> */}
-              {currentStory.content.includes("</think>") && (
-                <div className="story-text max-w-3xl mx-auto">
-                  {currentStory.content}
-                </div>
-              )}
-              <div className="story-text max-w-3xl mx-auto">
-                {isGenerating &&
-                  (currentStory.content.includes("<think>")
-                    ? "Thinking..."
-                    : currentStory.content)}
+              <div className="story-text max-w-3xl mx-auto prose prose-lg dark:prose-invert">
+                {isGenerating ? (
+                  <div className="space-y-4">
+                    {currentStory.content ? (
+                      <div className="relative">
+                        <div className="animate-pulse opacity-80">
+                          {currentStory.content.split('\n\n').map((paragraph, index) => (
+                            <p key={index} className="mb-4 last:mb-0 leading-relaxed">{paragraph}</p>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-center mt-6">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-accent rounded-full animate-bounce"></div>
+                          </div>
+                          <span className="ml-3 text-sm text-muted-foreground">Story in progress...</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <div className="flex gap-1 mb-4">
+                          <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                          <div className="w-3 h-3 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                          <div className="w-3 h-3 bg-accent rounded-full animate-bounce"></div>
+                        </div>
+                        <p className="text-muted-foreground">Crafting your story...</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {currentStory.content.split('\n\n').map((paragraph, index) => (
+                      <p key={index} className="mb-4 last:mb-0 leading-relaxed text-foreground/90">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -288,10 +333,10 @@ export function StoryDisplay({
                 <Button
                   variant="outline"
                   onClick={handleShare}
-                  className="flex items-center gap-2 bg-transparent"
+                  className="flex items-center gap-2 bg-transparent hover:bg-primary/5"
                 >
                   <Share2 className="w-4 h-4" />
-                  Share Link
+                  Share Story
                 </Button>
 
                 <Button

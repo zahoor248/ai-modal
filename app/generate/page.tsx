@@ -15,12 +15,17 @@ import {
 import { Sparkles, ArrowLeft, Loader2, Clock } from "lucide-react";
 import Link from "next/link";
 import { StoryDisplay } from "@/components/story-display";
-import { generateMockStory } from "@/lib/mock-api";
 import { TemplateSelector } from "@/components/template-selector";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { generateStory } from "@/lib/story-api";
 import { buildFullPrompt } from "@/lib/ai-prompts";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+// Helper function to generate title based on template and prompt
+const generateTitle = (template: { category: string; type: string }, userPrompt: string) => {
+  const words = userPrompt.split(' ').slice(0, 4).join(' ');
+  const templateType = template.type.charAt(0).toUpperCase() + template.type.slice(1);
+  return words ? `${words}` : `My ${templateType} Story`;
+};
 
 export default function GeneratePage() {
   const supabase = createClientComponentClient();
@@ -41,20 +46,20 @@ export default function GeneratePage() {
       storyLength,
       userPrompt: prompt,
     });
+    
     setIsGenerating(true);
-    // const res = generateStory("hi");
-    // console.log(res, " here is res");
-    // ✅ call your streaming API
-    const resp = await fetch("/api/v1/story/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullPrompt, mode: "stream" }),
-    });
+    setGeneratedStory({ content: "", title: "", template: selectedTemplate.type, createdAt: new Date().toISOString() });
 
-    if (!resp.ok || !resp.body) {
-      setIsGenerating(false);
-      throw new Error("Failed to generate story");
-    }
+    try {
+      const resp = await fetch("/api/v1/story/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullPrompt, mode: "stream" }),
+      });
+
+      if (!resp.ok || !resp.body) {
+        throw new Error(`Failed to generate story: ${resp.statusText}`);
+      }
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
@@ -74,18 +79,20 @@ export default function GeneratePage() {
         try {
           const parsed = JSON.parse(line);
           if (parsed.response) {
-            console.log(parsed.response, "parsed response")
-            // 🧹 Clean reasoning tags here
-            const clean = parsed.response.replace(
-              /<think>[\s\S]*?<\/think>/g,
-              ""
-            );
+            // Clean reasoning tags and unwanted formatting
+            const clean = parsed.response
+              .replace(/<think>[\s\S]*?<\/think>/g, "")
+              .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove bold markdown
+              .trim();
 
-            fullStory += clean;
-            setGeneratedStory((prev) => ({
-              ...prev,
-              content: (prev?.content || "") + clean, // ✅ append clean chunk
-            }));
+            if (clean) {
+              fullStory += clean;
+              setGeneratedStory((prev: any) => ({
+                ...prev,
+                content: (prev?.content || "") + clean,
+                title: prev?.title || generateTitle(selectedTemplate, prompt)
+              }));
+            }
           }
         } catch (err) {
           console.warn("Non-JSON chunk:", line);
@@ -93,21 +100,35 @@ export default function GeneratePage() {
       }
     }
 
-    setIsGenerating(false);
-    // ✅ only save if story has content
-    if (fullStory?.trim().length > 0) {
-      await fetch("/api/v1/story/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          story: fullStory,
-          prompt,
-          storyLength,
-          selectedTemplate,
-        }),
+      setIsGenerating(false);
+      // Save story if it has content
+      if (fullStory?.trim().length > 0) {
+        try {
+          await fetch("/api/v1/story/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              story: fullStory,
+              prompt,
+              storyLength,
+              selectedTemplate,
+              title: generateTitle(selectedTemplate, prompt)
+            }),
+          });
+        } catch (err) {
+          console.error("Failed to save story:", err);
+        }
+      }
+    } catch (error) {
+      console.error("Story generation failed:", error);
+      setIsGenerating(false);
+      // Show user-friendly error
+      setGeneratedStory({
+        content: "Sorry, we encountered an issue generating your story. Please try again.",
+        title: "Generation Error",
+        template: selectedTemplate.type,
+        createdAt: new Date().toISOString()
       });
-    } else {
-      console.error("Skipping save: story is empty");
     }
   };
 

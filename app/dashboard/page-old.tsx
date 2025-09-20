@@ -23,7 +23,6 @@ import {
   Sparkles,
   Calendar,
   Edit3,
-  Loader2,
 } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
@@ -61,7 +60,7 @@ export default function Dashboard() {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/login"); // redirect after logout
   };
 
   useEffect(() => {
@@ -75,7 +74,7 @@ export default function Dashboard() {
           return;
         }
 
-        // Fetch user's stories with better error handling
+        // Fetch user's stories
         const { data: stories, error } = await supabase
           .from('stories')
           .select('*')
@@ -84,7 +83,7 @@ export default function Dashboard() {
 
         if (error) {
           console.error('Error fetching stories:', error);
-          // Use fallback data if database query fails
+          // Fall back to mock data if there's an error
           setStats({ totalStories: 0, totalViews: 0, totalLikes: 0, weeklyCreated: 0 });
           setRecentStories([]);
           setTopStories([]);
@@ -94,9 +93,9 @@ export default function Dashboard() {
           const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
           
           // Calculate stats from real data
-          const totalViews = storyData.reduce((sum: number, story: any) => sum + (story.views || 0), 0);
-          const totalLikes = storyData.reduce((sum: number, story: any) => sum + (story.likes || 0), 0);
-          const weeklyCreated = storyData.filter((story: any) => 
+          const totalViews = storyData.reduce((sum, story) => sum + (story.views || 0), 0);
+          const totalLikes = storyData.reduce((sum, story) => sum + (story.likes || 0), 0);
+          const weeklyCreated = storyData.filter(story => 
             new Date(story.created_at) > oneWeekAgo
           ).length;
 
@@ -108,20 +107,20 @@ export default function Dashboard() {
           });
 
           // Process stories for different sections
-          const processedStories = storyData.map((story: any) => ({
+          const processedStories = storyData.map(story => ({
             id: story.id,
             title: story.title || 'Untitled Story',
             views: story.views || 0,
             likes: story.likes || 0,
             createdAt: story.created_at,
             template: story.template || 'story',
-            readTime: Math.ceil((story.content?.split(' ').length || 600) / 200),
+            readTime: Math.ceil((story.content?.split(' ').length || 0) / 200) || 3,
           }));
 
           setRecentStories(processedStories.slice(0, 3));
-          setTopStories([...processedStories].sort((a, b) => b.views - a.views).slice(0, 6));
-          setEditedStories([...processedStories].filter((story: any) => 
-            story.updated_at && story.createdAt !== story.updated_at
+          setTopStories(processedStories.sort((a, b) => b.views - a.views).slice(0, 6));
+          setEditedStories(processedStories.filter(story => 
+            story.createdAt !== story.updated_at
           ).slice(0, 2));
         }
       } catch (error) {
@@ -153,44 +152,6 @@ export default function Dashboard() {
       day: "numeric",
     });
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <BookOpen className="h-6 w-6 text-primary" />
-                <span className="font-serif text-xl font-bold text-foreground">StoryWeaver</span>
-              </div>
-              <ThemeSwitcher />
-            </div>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-8">
-          <div className="space-y-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-muted rounded w-1/3 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-32 bg-muted rounded"></div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="animate-pulse">
-              <div className="h-48 bg-muted rounded"></div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -229,20 +190,34 @@ export default function Dashboard() {
                 </Link>
               </nav>
             </div>
-            <div className="flex items-center gap-4">
-              <ThemeSwitcher />
-              <button 
-                className="text-neutral-700 hover:text-foreground transition-colors" 
-                onClick={logout}
-              >
-                Logout
-              </button>
-            </div>
+            <ThemeSwitcher />
+            <button className="text-neutral-700" onClick={logout}>Logout</button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {loading ? (
+          <div className="space-y-8">
+            {/* Loading skeleton */}
+            <div className="animate-pulse">
+              <div className="h-8 bg-muted rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-32 bg-muted rounded"></div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="animate-pulse">
+              <div className="h-48 bg-muted rounded"></div>
+            </div>
+          </div>
+        ) : (
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -353,48 +328,42 @@ export default function Dashboard() {
               <CardDescription>Your latest story creations</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentStories.length > 0 ? (
-                recentStories.map((story) => (
-                  <div
-                    key={story.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                  >
-                    <div className="flex-1">
-                      <Link
-                        href={`/stories/${story.id}`}
-                        className="font-medium text-foreground hover:text-primary transition-colors"
+              {recentStories.map((story) => (
+                <div
+                  key={story.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <div className="flex-1">
+                    <Link
+                      href={`/stories/${story.id}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      {story.title}
+                    </Link>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge
+                        variant="secondary"
+                        className={getTemplateColor(story.template)}
                       >
-                        {story.title}
-                      </Link>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          variant="secondary"
-                          className={getTemplateColor(story.template)}
-                        >
-                          {story.template}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {story.readTime} min read
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {story.views}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {story.likes}
+                        {story.template}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {story.readTime} min read
                       </span>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  No stories yet. <Link href="/generate" className="text-primary hover:underline">Create your first story!</Link>
-                </p>
-              )}
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      {story.views}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-3 w-3" />
+                      {story.likes}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -408,48 +377,42 @@ export default function Dashboard() {
               <CardDescription>Stories you've been refining</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {editedStories.length > 0 ? (
-                editedStories.map((story) => (
-                  <div
-                    key={story.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                  >
-                    <div className="flex-1">
-                      <Link
-                        href={`/stories/${story.id}`}
-                        className="font-medium text-foreground hover:text-primary transition-colors"
+              {editedStories.map((story) => (
+                <div
+                  key={story.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <div className="flex-1">
+                    <Link
+                      href={`/stories/${story.id}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      {story.title}
+                    </Link>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge
+                        variant="secondary"
+                        className={getTemplateColor(story.template)}
                       >
-                        {story.title}
-                      </Link>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          variant="secondary"
-                          className={getTemplateColor(story.template)}
-                        >
-                          {story.template}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          Edited {formatDate(story.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {story.views}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {story.likes}
+                        {story.template}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        Edited {formatDate(story.createdAt)}
                       </span>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  No edited stories yet.
-                </p>
-              )}
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      {story.views}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-3 w-3" />
+                      {story.likes}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
@@ -466,63 +429,57 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {topStories.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {topStories.map((story, index) => (
-                  <div
-                    key={story.id}
-                    className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors relative"
-                  >
-                    {index < 3 && (
-                      <div className="absolute -top-2 -right-2">
-                        <div
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                            index === 0
-                              ? "bg-yellow-500 text-white"
-                              : index === 1
-                              ? "bg-gray-400 text-white"
-                              : "bg-amber-600 text-white"
-                          }`}
-                        >
-                          {index + 1}
-                        </div>
-                      </div>
-                    )}
-                    <Link
-                      href={`/stories/${story.id}`}
-                      className="font-medium text-foreground hover:text-primary transition-colors block mb-2"
-                    >
-                      {story.title}
-                    </Link>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge
-                        variant="secondary"
-                        className={getTemplateColor(story.template)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topStories.map((story, index) => (
+                <div
+                  key={story.id}
+                  className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors relative"
+                >
+                  {index < 3 && (
+                    <div className="absolute -top-2 -right-2">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                          index === 0
+                            ? "bg-yellow-500 text-white"
+                            : index === 1
+                            ? "bg-gray-400 text-white"
+                            : "bg-amber-600 text-white"
+                        }`}
                       >
-                        {story.template}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {story.readTime} min read
-                      </span>
+                        {index + 1}
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {story.views} views
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {story.likes} likes
-                      </span>
-                    </div>
+                  )}
+                  <Link
+                    href={`/stories/${story.id}`}
+                    className="font-medium text-foreground hover:text-primary transition-colors block mb-2"
+                  >
+                    {story.title}
+                  </Link>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge
+                      variant="secondary"
+                      className={getTemplateColor(story.template)}
+                    >
+                      {story.template}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {story.readTime} min read
+                    </span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                No stories to display yet. <Link href="/generate" className="text-primary hover:underline">Create your first story!</Link>
-              </p>
-            )}
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      {story.views} views
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-3 w-3" />
+                      {story.likes} likes
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
