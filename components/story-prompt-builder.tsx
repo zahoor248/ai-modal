@@ -257,10 +257,14 @@ Please create an engaging and well-structured story that incorporates all these 
                   </h4>
                   <div className="grid gap-2">
                     {[
-                      "A mysterious package arrives with no return address...",
+                      "A mysterious package arrives with no return address, changing everything...",
                       "Two strangers get stuck in an elevator and discover they have more in common than they thought...",
-                      "A child finds an old diary that reveals family secrets...",
-                      "The last bookstore in town is about to close unless someone can save it..."
+                      "A child finds an old diary that reveals family secrets spanning generations...",
+                      "The last bookstore in town is about to close unless someone can save it...",
+                      "A young person inherits a magical ability they never knew existed...",
+                      "An unexpected friendship forms between the most unlikely pair...",
+                      "A small act of kindness creates a ripple effect that changes everything...",
+                      "Someone discovers their hometown has been keeping a fascinating secret..."
                     ].map((suggestion, index) => (
                       <button
                         key={index}
@@ -338,10 +342,31 @@ Please create an engaging and well-structured story that incorporates all these 
               )}
 
               {promptData.characters.length === 0 && (
-                <Card className="bg-muted/20 border-dashed border-2">
-                  <CardContent className="p-6 text-center">
-                    <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground">Add your first character to continue</p>
+                <Card className="bg-gradient-to-br from-muted/30 to-muted/10 border-dashed border-2">
+                  <CardContent className="p-6">
+                    <div className="text-center mb-4">
+                      <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground mb-3">Need character ideas? Try these archetypes:</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {[
+                        "Brave young hero", "Wise mentor", "Talking animal companion", 
+                        "Mysterious stranger", "Loyal best friend", "Kind grandmother",
+                        "Clever detective", "Magical creature", "Determined child",
+                        "Protective parent", "Funny sidekick", "Noble knight"
+                      ].map((character, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            setCharacterInput(character);
+                            setTimeout(() => addCharacter(), 100);
+                          }}
+                          className="text-sm p-2 rounded-lg hover:bg-primary/10 transition-colors duration-200 text-muted-foreground hover:text-foreground border border-dashed border-muted hover:border-primary/50"
+                        >
+                          {character}
+                        </button>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -370,6 +395,25 @@ Please create an engaging and well-structured story that incorporates all these 
                   onChange={(e) => setPromptData({ ...promptData, setting: e.target.value })}
                   className="min-h-24"
                 />
+                {!promptData.setting && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">Popular settings:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Enchanted forest", "Busy city", "Cozy village", "Ancient castle",
+                        "Space station", "Desert island", "Mountain peak", "Underwater kingdom"
+                      ].map((setting, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setPromptData({ ...promptData, setting })}
+                          className="text-xs px-3 py-1 rounded-full bg-muted/50 hover:bg-primary/10 transition-colors duration-200 text-muted-foreground hover:text-foreground border border-muted hover:border-primary/50"
+                        >
+                          {setting}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -380,6 +424,25 @@ Please create an engaging and well-structured story that incorporates all these 
                   value={promptData.timeframe}
                   onChange={(e) => setPromptData({ ...promptData, timeframe: e.target.value })}
                 />
+                {!promptData.timeframe && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">Time periods:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Present day", "Medieval times", "Victorian era", "Far future",
+                        "Ancient times", "Wild West", "1950s", "Stone Age"
+                      ].map((time, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setPromptData({ ...promptData, timeframe: time })}
+                          className="text-xs px-3 py-1 rounded-full bg-muted/50 hover:bg-primary/10 transition-colors duration-200 text-muted-foreground hover:text-foreground border border-muted hover:border-primary/50"
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -405,6 +468,36 @@ Please create an engaging and well-structured story that incorporates all these 
                 onChange={(e) => setPromptData({ ...promptData, goal: e.target.value })}
                 className="min-h-32"
               />
+              {!promptData.goal && (
+                <Card className="bg-gradient-to-br from-muted/30 to-muted/10 border-dashed border-2">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Target className="w-4 h-4" />
+                      Common story goals & conflicts:
+                    </h4>
+                    <div className="grid gap-2">
+                      {[
+                        "Save someone or something important",
+                        "Discover a hidden truth or mystery", 
+                        "Overcome a personal fear or weakness",
+                        "Win a competition or contest",
+                        "Find something that was lost",
+                        "Protect home from danger",
+                        "Help someone in need",
+                        "Learn an important life lesson"
+                      ].map((goal, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setPromptData({ ...promptData, goal })}
+                          className="text-left p-2 rounded-lg hover:bg-primary/10 transition-colors duration-200 text-sm text-muted-foreground hover:text-foreground border border-dashed border-transparent hover:border-primary/30"
+                        >
+                          {goal}
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         );
@@ -480,6 +573,44 @@ Please create an engaging and well-structured story that incorporates all these 
                   <Label className="text-xl font-serif font-medium mb-2 block">Central Theme</Label>
                   <p className="text-muted-foreground">What deeper message or lesson should your story convey?</p>
                 </div>
+                
+                {/* Popular combinations */}
+                {!promptData.tone || !promptData.theme ? (
+                  <Card className="bg-gradient-to-br from-muted/20 to-muted/10 border-dashed border-2 max-w-4xl mx-auto">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold mb-3 text-center flex items-center justify-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        Popular combinations that work great together:
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {[
+                          { tone: "heartwarming", theme: "friendship", label: "Heartwarming + Friendship" },
+                          { tone: "adventurous", theme: "courage", label: "Adventurous + Courage" },
+                          { tone: "mysterious", theme: "discovery", label: "Mysterious + Discovery" },
+                          { tone: "uplifting", theme: "growth", label: "Uplifting + Personal Growth" },
+                          { tone: "whimsical", theme: "magic", label: "Whimsical + Magic" },
+                          { tone: "peaceful", theme: "nature", label: "Peaceful + Nature" }
+                        ].map((combo, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setPromptData({ 
+                              ...promptData, 
+                              tone: combo.tone, 
+                              theme: combo.theme 
+                            })}
+                            className="text-sm p-2 rounded-lg hover:bg-primary/10 transition-colors duration-200 text-muted-foreground hover:text-foreground border border-dashed border-muted hover:border-primary/50 flex items-center gap-2"
+                          >
+                            <div className="flex items-center gap-1">
+                              {toneOptions.find(t => t.id === combo.tone)?.icon}
+                              {themeOptions.find(t => t.id === combo.theme)?.icon}
+                            </div>
+                            {combo.label}
+                          </button>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : null}
                 <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
                   {themeOptions.map((theme, index) => (
                     <Card
