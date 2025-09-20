@@ -642,53 +642,92 @@ export function EnhancedTemplateSelector({ selectedTemplate, onTemplateSelect }:
       </div>
 
       {/* Template Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {templateCategories.map((category) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {templateCategories.map((category, index) => (
           <Card
             key={category.id}
-            className={`cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 overflow-hidden group ${
-              expandedCategory === category.id ? "ring-2 ring-primary shadow-xl scale-105" : ""
+            className={`cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl border-0 overflow-hidden group relative ${
+              expandedCategory === category.id 
+                ? "ring-2 ring-primary/60 shadow-2xl scale-[1.02] bg-gradient-to-br from-background to-primary/5" 
+                : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20"
             }`}
+            style={{
+              animationDelay: `${index * 100}ms`,
+            }}
+            data-animate="fade-in-up"
             onClick={() => handleCategoryClick(category.id)}
           >
-            {/* Card Header with Gradient */}
-            <div className={`h-40 bg-gradient-to-br ${category.gradient} relative overflow-hidden`}>
-              {/* Illustration */}
+            {/* Animated border */}
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            {/* Card Header with Enhanced Gradient */}
+            <div className={`h-44 bg-gradient-to-br ${category.gradient} relative overflow-hidden`}>
+              {/* Animated background pattern */}
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.3)_0%,transparent_50%)] transform scale-0 group-hover:scale-100 transition-transform duration-700" />
+              </div>
+              
+              {/* Illustration with enhanced animation */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-7xl opacity-90 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 filter drop-shadow-lg">
                   {category.illustration}
                 </div>
               </div>
               
-              {/* Icon in corner */}
-              <div className="absolute top-4 right-4 text-white/90 group-hover:text-white transition-colors">
+              {/* Floating particles effect */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-4 left-4 w-2 h-2 bg-white/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-700" />
+                <div className="absolute top-8 right-8 w-1 h-1 bg-white/40 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-500" />
+                <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-white/25 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-600" />
+              </div>
+              
+              {/* Icon in corner with enhanced styling */}
+              <div className="absolute top-4 right-4 text-white/90 group-hover:text-white group-hover:scale-110 transition-all duration-300 bg-white/10 rounded-full p-2 backdrop-blur-sm">
                 {category.icon}
               </div>
 
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Enhanced hover overlay with gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             </div>
 
-            <CardContent className="p-5">
+            <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                  <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors duration-300 font-serif">
                     {category.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed group-hover:text-foreground/70 transition-colors duration-300">
                     {category.description}
                   </p>
+                  
+                  {/* Category stats */}
+                  <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+                    <Badge variant="outline" className="text-xs px-2 py-1">
+                      {category.types.length} types
+                    </Badge>
+                  </div>
                 </div>
-                <ChevronRight
-                  className={`w-5 h-5 ml-2 transition-all duration-200 ${
-                    expandedCategory === category.id ? "rotate-90 text-primary" : "text-muted-foreground"
-                  }`}
-                />
+                
+                {/* Enhanced arrow with background */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+                  <ChevronRight
+                    className={`w-6 h-6 ml-3 transition-all duration-300 relative z-10 ${
+                      expandedCategory === category.id 
+                        ? "rotate-90 text-primary scale-110" 
+                        : "text-muted-foreground group-hover:text-primary group-hover:translate-x-1"
+                    }`}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
 
       {/* Expanded Category Types */}
       {expandedCategory && (
@@ -709,54 +748,77 @@ export function EnhancedTemplateSelector({ selectedTemplate, onTemplateSelect }:
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {templateCategories
                 .find((c) => c.id === expandedCategory)
-                ?.types.map((type) => (
+                ?.types.map((type, typeIndex) => (
                   <Card
                     key={type.id}
-                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-102 ${
+                    className={`cursor-pointer transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden ${
                       selectedTemplate?.category === expandedCategory && selectedTemplate?.type === type.id
-                        ? "ring-2 ring-primary bg-primary/5 shadow-lg"
-                        : "hover:bg-muted/30"
+                        ? "ring-2 ring-primary bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-xl scale-[1.02]"
+                        : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20"
                     }`}
+                    style={{
+                      animationDelay: `${typeIndex * 150}ms`,
+                    }}
                     onClick={() => handleTypeSelect(expandedCategory, type.id)}
                   >
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="font-bold text-lg">{type.title}</h4>
+                    {/* Animated border for type cards */}
+                    <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <CardContent className="p-6 relative z-10">
+                      <div className="flex items-start justify-between mb-4">
+                        <h4 className="font-bold text-xl font-serif group-hover:text-primary transition-colors duration-300">
+                          {type.title}
+                        </h4>
                         {selectedTemplate?.category === expandedCategory && selectedTemplate?.type === type.id && (
-                          <Badge className="bg-primary/10 text-primary border-primary/20">
-                            <Sparkles className="w-3 h-3 mr-1" />
+                          <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse">
+                            <Sparkles className="w-3 h-3 mr-1 animate-spin" />
                             Selected
                           </Badge>
                         )}
                       </div>
                       
-                      <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                      <p className="text-muted-foreground mb-5 text-sm leading-relaxed group-hover:text-foreground/70 transition-colors duration-300">
                         {type.description}
                       </p>
 
-                      {/* Mood Tags */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {type.mood.map((mood) => (
+                      {/* Enhanced Mood Tags */}
+                      <div className="flex flex-wrap gap-2 mb-5">
+                        {type.mood.map((mood, moodIndex) => (
                           <Badge 
                             key={mood} 
                             variant="secondary" 
-                            className="text-xs bg-muted/50"
+                            className="text-xs px-3 py-1 bg-muted/50 hover:bg-primary/20 hover:text-primary transition-all duration-300 group-hover:scale-105"
+                            style={{
+                              animationDelay: `${moodIndex * 100}ms`,
+                            }}
                           >
                             {mood}
                           </Badge>
                         ))}
                       </div>
 
-                      {/* Example Text */}
-                      <div className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary/30">
-                        <p className="text-sm italic text-muted-foreground leading-relaxed">
-                          "{type.example}"
-                        </p>
+                      {/* Enhanced Example Text */}
+                      <div className="bg-gradient-to-r from-muted/40 to-muted/20 rounded-lg p-5 border-l-4 border-primary/40 group-hover:border-primary/60 transition-all duration-300 relative overflow-hidden">
+                        {/* Subtle background animation */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500" />
+                        
+                        <div className="relative z-10">
+                          <div className="text-xs text-primary font-medium mb-2 opacity-70">Story Preview</div>
+                          <p className="text-sm italic text-muted-foreground leading-relaxed font-serif">
+                            "{type.example}"
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Hover indicator */}
+                      <div className="absolute bottom-4 right-4 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
+                        <ChevronRight className="w-4 h-4 text-primary" />
                       </div>
                     </CardContent>
                   </Card>
                 ))}
             </div>
+
 
             <div className="mt-6 flex justify-end">
               <Button variant="outline" onClick={() => setExpandedCategory(null)}>
