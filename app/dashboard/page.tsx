@@ -162,7 +162,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <BookOpen className="h-6 w-6 text-primary" />
-                <span className="font-serif text-xl font-bold text-foreground">StoryWeaver</span>
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">StoryBuds</span>
               </div>
               <ThemeSwitcher />
             </div>
@@ -199,10 +199,14 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <BookOpen className="h-6 w-6 text-primary" />
-                <span className="font-serif text-xl font-bold text-foreground">
-                  StoryWeaver
+              <Link href="/" className="flex items-center space-x-3">
+                <img
+                  src="/StoryBuds/StoryBuds-logo-transparent.png"
+                  alt="StoryBuds"
+                  className="h-8 w-auto object-contain"
+                />
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  StoryBuds
                 </span>
               </Link>
               <nav className="hidden md:flex items-center space-x-6">

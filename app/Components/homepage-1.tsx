@@ -39,7 +39,7 @@ export default function Page() {
             </svg>
           </div>
           <div>
-            <div className="font-playfair text-xl font-bold">StoryWeaver</div>
+            <div className="font-bold text-xl bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">StoryBuds</div>
             <div className="text-xs text-gray-300 -mt-1">AI Storytelling</div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function Page() {
       <section className="container mx-auto px-6 py-12 text-center">
         <blockquote className="max-w-3xl mx-auto text-gray-300 italic">
           “We believe every child, every dreamer, every creator has a story
-          worth telling. StoryWeaver gives your words a voice and a home.”
+          worth telling. StoryBuds gives your words a voice and a home.”
         </blockquote>
       </section>
 
@@ -343,7 +343,7 @@ export default function Page() {
       {/* FOOTER */}
       <footer className="border-t border-white/6 mt-8 py-8 text-center text-sm text-gray-400">
         <div className="container mx-auto px-6">
-          © {new Date().getFullYear()} StoryWeaver — Where every story finds its
+          © {new Date().getFullYear()} StoryBuds — Where every story finds its
           voice
         </div>
       </footer>
