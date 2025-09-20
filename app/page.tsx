@@ -203,66 +203,111 @@ export default function HomePage() {
 
   return (
     <main className={`${appliedThemeClasses} min-h-screen  duration-300`}>
-      {/* NAV */}
-      <header className="container h-20 overflow-hidden mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img
-            src="/StoryBuds/StoryBuds-logo-transparent.png"
-            alt="Logo"
-            className="w-full h-full max-w-[140px] object-contain"
-          />
-        </div>
-
-        <nav className="hidden md:flex items-center gap-6 text-sm text-current/70">
-          <a href="#features" className="hover:opacity-70">
-            Features
-          </a>
-          <a href="#trending" className="hover:opacity-70">
-            Trending
-          </a>
-          <a href="#themes" className="hover:opacity-70">
-            Themes
-          </a>
-          <a href="#pricing" className="hover:opacity-70">
-            Pricing
-          </a>
-          <a href="#faq" className="hover:opacity-70">
-            FAQ
-          </a>
-          <Link href={"/register"} className="button-primary">
-            REGISTER
-          </Link>
-        </nav>
-      </header>
-
-      {/* HERO (magical kid + wand feel) */}
-      <section className="container mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl leading-tight font-bold mb-6">
-            Turn imagination into{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-300">
-              magical stories
-            </span>
-            .
-          </h1>
-          <p className="text-lg text-current/70 mb-8">
-            AI-powered storytelling for bedtime tales, books, audio and videos.
-            Create, listen, and share stories that touch hearts.
-          </p>
-
-          <div className="flex gap-4 items-center">
-            <Link href={"/register"} className="button-primary !rounded-full">
-              Start Free — No Card
-            </Link>
-            <button className="px-6 py-3 rounded-full border border-white/10">
-              Join Community
-            </button>
+      {/* MODERN NAVIGATION */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/10">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src="/StoryBuds/StoryBuds-logo-transparent.png"
+              alt="StoryBuds"
+              className="h-10 w-auto object-contain"
+            />
+            <div className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              StoryBuds
+            </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-4 text-sm text-current/70">
-            <Stat number="10k+" label="Stories created" />
-            <Stat number="8k+" label="Happy readers" />
-            <Stat number="2k+" label="Community members" />
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+            <a href="#features" className="text-foreground/80 hover:text-primary transition-colors duration-200">
+              Features
+            </a>
+            <a href="#how-it-works" className="text-foreground/80 hover:text-primary transition-colors duration-200">
+              How it Works
+            </a>
+            <a href="#pricing" className="text-foreground/80 hover:text-primary transition-colors duration-200">
+              Pricing
+            </a>
+            <a href="#testimonials" className="text-foreground/80 hover:text-primary transition-colors duration-200">
+              Reviews
+            </a>
+            <div className="flex items-center gap-3">
+              <Link href="/login" className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors duration-200">
+                Sign In
+              </Link>
+              <Link href="/register" className="px-6 py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-lg">
+                Start Free
+              </Link>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* PREMIUM HERO SECTION */}
+      <section className="relative py-20 lg:py-28 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
+              ✨
+              <span>Trusted by 50,000+ storytellers worldwide</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+              <span className="block">Create</span>
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                Extraordinary Stories
+              </span>
+              <span className="block">in Seconds</span>
+            </h1>
+            
+            <p className="text-xl text-foreground/70 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Transform your ideas into captivating tales with AI. From bedtime stories to published books, 
+              create content that moves hearts and minds.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Link 
+                href="/register" 
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-semibold text-lg hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+              >
+                ✨
+                Start Creating Free
+              </Link>
+              <button className="px-8 py-4 border border-border/50 rounded-full font-medium text-lg hover:bg-accent/10 hover:border-primary/30 transition-all duration-200 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                Watch Demo (2 min)
+              </button>
+            </div>
+
+            {/* Social Proof */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-foreground/60">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 border-2 border-background" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500 border-2 border-background" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 border-2 border-background" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-400 to-red-500 border-2 border-background" />
+                </div>
+                <span className="ml-2 font-medium">50,000+ creators trust us</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                ))}
+                <span className="ml-2">4.9/5 from 2,000+ reviews</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -307,42 +352,172 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* VISION */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-semibold mb-4">
-            We believe every voice deserves a stage
-          </h2>
-          <p className="text-current/70">
-            From bedtime tales to publish-ready books — StoryWeaver turns
-            imagination into shareable stories that bond families, classrooms,
-            and communities.
-          </p>
+      {/* TESTIMONIALS SECTION */}
+      <section id="testimonials" className="py-20 bg-gradient-to-br from-muted/10 to-transparent">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium mb-6">
+              💝 Loved by Creators
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              Stories That Touch Hearts
+            </h2>
+            <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
+              Join thousands of storytellers who've transformed their ideas into compelling narratives.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Testimonial 1 */}
+            <div className="bg-card border border-border/50 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+              <div className="flex items-center gap-1 mb-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-foreground/80 mb-4 italic">
+                "StoryBuds helped me create the perfect bedtime stories for my children. The AI understands exactly what I want to convey."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-purple-500" />
+                <div>
+                  <div className="font-semibold text-sm">Sarah Chen</div>
+                  <div className="text-xs text-foreground/60">Parent & Teacher</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-card border border-border/50 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+              <div className="flex items-center gap-1 mb-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-foreground/80 mb-4 italic">
+                "As an indie author, this platform has revolutionized my writing process. I can create compelling stories in minutes."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500" />
+                <div>
+                  <div className="font-semibold text-sm">Marcus Rivera</div>
+                  <div className="text-xs text-foreground/60">Author</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-card border border-border/50 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300 md:col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-1 mb-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-foreground/80 mb-4 italic">
+                "The audio features are incredible! My students love listening to the stories we create together in class."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" />
+                <div>
+                  <div className="font-semibold text-sm">Emily Johnson</div>
+                  <div className="text-xs text-foreground/60">Elementary Teacher</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-8 text-center">
-            How it works
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard
-              emoji="✍️"
-              title="Create"
-              desc="Start with a template or a prompt — AI writes your story in moments."
-            />
-            <FeatureCard
-              emoji="🎧"
-              title="Listen"
-              desc="Natural TTS narration makes every tale come alive."
-            />
-            <FeatureCard
-              emoji="🔗"
-              title="Share"
-              desc="Export PDF, ePub, audio or publish to the community feed."
-            />
+      {/* HOW IT WORKS - PREMIUM DESIGN */}
+      <section id="how-it-works" className="py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 to-transparent" />
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              🚀 Simple Process
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              From Idea to
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Story </span>
+              in Minutes
+            </h2>
+            <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
+              Our AI-powered platform makes storytelling effortless. Just describe your vision,
+              and watch it transform into compelling narratives.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            <div className="relative group">
+              <div className="bg-card border border-border/50 rounded-2xl p-8 hover:shadow-xl hover:border-primary/20 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    ✍️
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-3xl font-bold text-primary">01</span>
+                    <h3 className="text-xl font-semibold">Describe Your Vision</h3>
+                  </div>
+                  <p className="text-foreground/70 leading-relaxed">
+                    Share your story idea, characters, or theme. Our intelligent prompts guide you through the creative process.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative group">
+              <div className="bg-card border border-border/50 rounded-2xl p-8 hover:shadow-xl hover:border-primary/20 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    ✨
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-3xl font-bold text-primary">02</span>
+                    <h3 className="text-xl font-semibold">AI Creates Magic</h3>
+                  </div>
+                  <p className="text-foreground/70 leading-relaxed">
+                    Watch as advanced AI transforms your concept into a beautifully crafted story with rich characters and plot.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative group">
+              <div className="bg-card border border-border/50 rounded-2xl p-8 hover:shadow-xl hover:border-primary/20 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    🚀
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-3xl font-bold text-primary">03</span>
+                    <h3 className="text-xl font-semibold">Publish & Share</h3>
+                  </div>
+                  <p className="text-foreground/70 leading-relaxed">
+                    Export as PDF, audio, or eBook. Share with the world or keep it private - the choice is yours.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <Link 
+              href="/register" 
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              🎯 Try it Now - It's Free
+            </Link>
+            <p className="text-sm text-foreground/60 mt-4">No credit card required • Start creating in 30 seconds</p>
           </div>
         </div>
       </section>
