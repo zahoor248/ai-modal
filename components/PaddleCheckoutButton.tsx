@@ -17,9 +17,13 @@ export default function CheckoutButton({
     script.src = "https://cdn.paddle.com/paddle/v2/paddle.js"; // v2 for new checkout
     script.onload = () => {
       // @ts-ignore
-      Paddle.Environment.set("sandbox");
+      const environment = process.env.NODE_ENV === "production" ? "production" : "sandbox";
+      Paddle.Environment.set(environment);
       // @ts-ignore
-      Paddle.Initialize({ token: "test_01c675cb6f87321cb49f750cd8d" }); // use your client-side token
+      const token = process.env.NODE_ENV === "production" 
+        ? process.env.NEXT_PUBLIC_PADDLE_TOKEN 
+        : "test_01c675cb6f87321cb49f750cd8d";
+      Paddle.Initialize({ token });
     };
     document.body.appendChild(script);
   }, []);
@@ -32,8 +36,8 @@ export default function CheckoutButton({
         email: "test@example.com",
       },
       settings: {
-        successUrl: "https://yourdomain.com/checkout/success",
-        cancelUrl: "http://example.com/checkout/cancel", // 🚨 required
+        successUrl: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/checkout/success`,
+        cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/checkout/cancel`,
       },
       successCallback: (data: any) => {
         console.log("✅ Payment success:", data);

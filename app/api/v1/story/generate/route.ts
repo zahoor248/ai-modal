@@ -45,16 +45,12 @@ export async function POST(req: Request) {
     });
   }
 
-  // 🕒 Wait until LLM fully finishes
-  console.log(resp.body);
+  // Wait until LLM fully finishes
   const reader = resp.body!.getReader();
   while (true) {
     const { done, value } = await reader.read();
-    console.log(done, value);
-
     if (done) break;
     fullStory += decoder.decode(value, { stream: true });
-    console.log(fullStory);
   }
 
   if (!fullStory.trim()) {
