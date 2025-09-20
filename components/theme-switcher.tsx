@@ -59,7 +59,7 @@ export function ThemeSwitcher() {
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 bg-background/80 text-neutral-700 backdrop-blur-sm border-border/50 hover:bg-background/90"
+          className="gap-2 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 hover:border-primary/30 hover:text-primary transition-all duration-200"
         >
           <Palette className="h-4 w-4" />
           Theme
@@ -70,7 +70,7 @@ export function ThemeSwitcher() {
           <DropdownMenuItem
             key={themeOption.name}
             onClick={() => setTheme(themeOption.name)}
-            className="flex items-center justify-between cursor-pointer"
+            className="flex items-center justify-between cursor-pointer hover:bg-accent/50 transition-colors duration-200 rounded-md focus:bg-accent focus:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
               <div

@@ -40,14 +40,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`font-sans ${poppins.variable} ${crimsonText.variable} ${jetbrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="warm"
-          enableSystem
+          enableSystem={false}
           themes={[
             "light",
             "dark",
@@ -59,12 +60,7 @@ export default function RootLayout({
             "dreamland",
             "galaxy",
             "paper",
-            "candyland",
             "icecream",
-            "rainbow",
-            "fairytale",
-            "space",
-            "mint",
           ]}
         >
           <ToastProvider>

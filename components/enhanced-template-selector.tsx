@@ -646,10 +646,10 @@ export function EnhancedTemplateSelector({ selectedTemplate, onTemplateSelect }:
         {templateCategories.map((category, index) => (
           <Card
             key={category.id}
-            className={`cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl border-0 overflow-hidden group relative ${
+            className={`cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-xl border-0 overflow-hidden group relative ${
               expandedCategory === category.id 
-                ? "ring-2 ring-primary/60 shadow-2xl scale-[1.02] bg-gradient-to-br from-background to-primary/5" 
-                : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20"
+                ? "ring-2 ring-primary/60 shadow-xl scale-[1.02] bg-gradient-to-br from-background to-primary/10 border-primary/20" 
+                : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20 hover:border-primary/10 shadow-sm"
             }`}
             style={{
               animationDelay: `${index * 100}ms`,
