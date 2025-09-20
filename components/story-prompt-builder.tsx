@@ -699,13 +699,17 @@ Please create an engaging and well-structured story that incorporates all these 
 
   return (
     <div className="space-y-8">
-      {/* Progress Bar */}
-      <div className="space-y-4">
+      {/* Enhanced Progress Bar */}
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-serif font-bold">Story Builder</h2>
-          <span className="text-sm text-muted-foreground">
-            Step {currentStep + 1} of {steps.length}
-          </span>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Story Builder
+          </h2>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+              ✨ Step {currentStep + 1} of {steps.length}
+            </div>
+          </div>
         </div>
         
         <div className="flex items-center gap-2">

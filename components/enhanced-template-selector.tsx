@@ -635,10 +635,19 @@ export function EnhancedTemplateSelector({ selectedTemplate, onTemplateSelect }:
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif font-bold mb-2">Choose Your Story Universe</h2>
-        <p className="text-muted-foreground">Select a category to explore different story types and styles</p>
+      {/* Enhanced Header */}
+      <div className="text-center mb-12 space-y-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+          ✨ Step 1 of 4
+        </div>
+        <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Choose Your Story Universe
+          </span>
+        </h2>
+        <p className="text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">
+          Select a category to explore different story types and styles. Each universe offers unique storytelling approaches designed to inspire your creativity.
+        </p>
       </div>
 
       {/* Template Categories Grid */}
