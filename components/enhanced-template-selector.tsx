@@ -16,7 +16,8 @@ import {
   TreePine,
   Ghost,
   Music,
-  Zap
+  Zap,
+  BookOpen
 } from "lucide-react";
 
 interface Template {
@@ -83,6 +84,30 @@ const templateCategories: TemplateCategory[] = [
         example: "Today was the day Luna would discover the secret of...",
         mood: ["curious", "inspiring", "educational"],
         keywords: ["learning", "discovery", "science", "colors", "numbers"]
+      },
+      {
+        id: "superhero-kids",
+        title: "Young Superhero",
+        description: "Empowering stories about kids discovering their special powers",
+        example: "Emma never knew she was different until the day she made flowers bloom...",
+        mood: ["empowering", "exciting", "heroic"],
+        keywords: ["superhero", "powers", "courage", "helping", "friendship"]
+      },
+      {
+        id: "pirate-adventure",
+        title: "Pirate Adventure",
+        description: "Swashbuckling adventures on the high seas with treasure and friendship",
+        example: "Captain Luna and her crew discovered a map that led to the most amazing...",
+        mood: ["adventurous", "brave", "exciting"],
+        keywords: ["pirates", "treasure", "ship", "ocean", "adventure"]
+      },
+      {
+        id: "space-kids",
+        title: "Space Explorer",
+        description: "Young astronauts exploring galaxies and making alien friends",
+        example: "Zoe put on her special space helmet and stepped onto the purple planet...",
+        mood: ["curious", "exciting", "wondrous"],
+        keywords: ["space", "aliens", "planets", "rocket", "exploration"]
       }
     ]
   },
@@ -313,6 +338,268 @@ const templateCategories: TemplateCategory[] = [
         example: "Dr. Williams began to question her own memories when...",
         mood: ["disturbing", "psychological", "unsettling"],
         keywords: ["psychology", "mind", "sanity", "reality", "disturbing"]
+      }
+    ]
+  },
+  {
+    id: "business",
+    title: "Business & Professional",
+    description: "Corporate adventures and entrepreneurial journeys",
+    icon: <Crown className="w-6 h-6" />,
+    illustration: "💼",
+    gradient: "from-slate-600 via-blue-600 to-cyan-600",
+    types: [
+      {
+        id: "startup-journey",
+        title: "Startup Adventure",
+        description: "The exciting rollercoaster of building a company from scratch",
+        example: "Sarah quit her corporate job with nothing but a laptop and a dream...",
+        mood: ["inspiring", "challenging", "ambitious"],
+        keywords: ["startup", "entrepreneur", "innovation", "success", "risk"]
+      },
+      {
+        id: "corporate-thriller",
+        title: "Corporate Thriller",
+        description: "High-stakes corporate espionage and boardroom battles",
+        example: "The quarterly report revealed something that could destroy the company...",
+        mood: ["suspenseful", "strategic", "intense"],
+        keywords: ["corporate", "business", "competition", "strategy", "power"]
+      },
+      {
+        id: "leadership-story",
+        title: "Leadership Journey",
+        description: "Stories about rising through the ranks and inspiring teams",
+        example: "Marcus never expected to lead a team of fifty, but when the opportunity came...",
+        mood: ["inspiring", "challenging", "growth"],
+        keywords: ["leadership", "team", "growth", "responsibility", "success"]
+      }
+    ]
+  },
+  {
+    id: "historical",
+    title: "Historical Fiction",
+    description: "Stories set in fascinating periods of human history",
+    icon: <BookOpen className="w-6 h-6" />,
+    illustration: "🏛️",
+    gradient: "from-amber-600 via-orange-600 to-red-700",
+    types: [
+      {
+        id: "ancient-civilizations",
+        title: "Ancient Civilizations",
+        description: "Epic tales from the great civilizations of antiquity",
+        example: "In the shadow of the Great Pyramid, Khaemwaset discovered a secret that...",
+        mood: ["epic", "mysterious", "grand"],
+        keywords: ["ancient", "civilization", "history", "culture", "mystery"]
+      },
+      {
+        id: "world-war-era",
+        title: "World War Stories",
+        description: "Powerful stories of courage and sacrifice during wartime",
+        example: "The coded message arrived just as Allied forces were preparing...",
+        mood: ["heroic", "intense", "emotional"],
+        keywords: ["war", "courage", "sacrifice", "history", "heroism"]
+      },
+      {
+        id: "renaissance-tales",
+        title: "Renaissance & Medieval",
+        description: "Stories of knights, artists, and discoveries in medieval times",
+        example: "Master Leonardo put down his brush and gazed at the mysterious smile...",
+        mood: ["artistic", "adventurous", "romantic"],
+        keywords: ["renaissance", "medieval", "art", "knights", "discovery"]
+      },
+      {
+        id: "wild-west",
+        title: "Wild West",
+        description: "Tales of cowboys, outlaws, and frontier life in the American West",
+        example: "Sheriff Martinez rode into Deadwood just as the sun was setting...",
+        mood: ["adventurous", "gritty", "heroic"],
+        keywords: ["western", "cowboys", "frontier", "justice", "adventure"]
+      }
+    ]
+  },
+  {
+    id: "literary",
+    title: "Literary Fiction",
+    description: "Sophisticated narratives exploring the human condition",
+    icon: <Palette className="w-6 h-6" />,
+    illustration: "✍️",
+    gradient: "from-emerald-600 via-teal-600 to-cyan-700",
+    types: [
+      {
+        id: "coming-of-age",
+        title: "Coming of Age",
+        description: "Profound stories about growing up and finding one's place in the world",
+        example: "The summer Maya turned sixteen, everything she thought she knew...",
+        mood: ["reflective", "emotional", "transformative"],
+        keywords: ["growth", "adolescence", "discovery", "identity", "maturity"]
+      },
+      {
+        id: "social-commentary",
+        title: "Social Commentary",
+        description: "Thought-provoking stories that examine society and human nature",
+        example: "In a town where everyone knew everyone's business, Maria discovered...",
+        mood: ["thoughtful", "challenging", "insightful"],
+        keywords: ["society", "humanity", "culture", "social", "commentary"]
+      },
+      {
+        id: "stream-consciousness",
+        title: "Character Study",
+        description: "Deep psychological explorations of complex characters",
+        example: "As Helen sat in the empty café, memories flooded back like...",
+        mood: ["introspective", "psychological", "deep"],
+        keywords: ["psychology", "character", "introspection", "memory", "emotion"]
+      }
+    ]
+  },
+  {
+    id: "comedy",
+    title: "Comedy & Humor",
+    description: "Laugh-out-loud stories that brighten your day",
+    icon: <Music className="w-6 h-6" />,
+    illustration: "😂",
+    gradient: "from-yellow-400 via-orange-400 to-red-500",
+    types: [
+      {
+        id: "romantic-comedy",
+        title: "Romantic Comedy",
+        description: "Hilarious love stories with mistaken identities and happy endings",
+        example: "Jake accidentally sent his love poem to his boss instead of his crush...",
+        mood: ["funny", "romantic", "lighthearted"],
+        keywords: ["comedy", "romance", "funny", "love", "humor"]
+      },
+      {
+        id: "workplace-comedy",
+        title: "Workplace Comedy",
+        description: "Funny office antics and ridiculous corporate situations",
+        example: "The team-building retreat was supposed to improve morale, but when...",
+        mood: ["hilarious", "satirical", "relatable"],
+        keywords: ["office", "work", "comedy", "corporate", "funny"]
+      },
+      {
+        id: "family-comedy",
+        title: "Family Comedy",
+        description: "Heartwarming and funny stories about family life and chaos",
+        example: "The Thompson family vacation was going perfectly until Dad tried to...",
+        mood: ["heartwarming", "funny", "relatable"],
+        keywords: ["family", "comedy", "chaos", "funny", "heartwarming"]
+      },
+      {
+        id: "absurd-comedy",
+        title: "Absurd Comedy",
+        description: "Surreal and wonderfully weird stories that defy logic",
+        example: "Tuesday was the day all the office plants started giving relationship advice...",
+        mood: ["absurd", "surreal", "hilarious"],
+        keywords: ["absurd", "surreal", "weird", "comedy", "bizarre"]
+      }
+    ]
+  },
+  {
+    id: "sports",
+    title: "Sports & Competition",
+    description: "Inspiring stories of athletic achievement and team spirit",
+    icon: <Zap className="w-6 h-6" />,
+    illustration: "🏆",
+    gradient: "from-green-500 via-blue-500 to-purple-600",
+    types: [
+      {
+        id: "underdog-victory",
+        title: "Underdog Victory",
+        description: "Inspiring stories of unlikely champions who never gave up",
+        example: "The team from the small town had never won a championship, but this year...",
+        mood: ["inspiring", "triumphant", "motivating"],
+        keywords: ["underdog", "victory", "championship", "determination", "team"]
+      },
+      {
+        id: "olympic-dreams",
+        title: "Olympic Dreams",
+        description: "Athletes pursuing their ultimate goal on the world's biggest stage",
+        example: "Four years of training led to this moment as Elena stepped onto the ice...",
+        mood: ["inspiring", "intense", "emotional"],
+        keywords: ["olympics", "dreams", "training", "competition", "excellence"]
+      },
+      {
+        id: "team-building",
+        title: "Team Building",
+        description: "Stories about coming together as a team despite differences",
+        example: "The new coach brought together players who couldn't stand each other...",
+        mood: ["uplifting", "collaborative", "growth"],
+        keywords: ["team", "cooperation", "unity", "sports", "friendship"]
+      }
+    ]
+  },
+  {
+    id: "travel",
+    title: "Travel & Culture",
+    description: "Adventures in exotic locations and cultural discoveries",
+    icon: <Compass className="w-6 h-6" />,
+    illustration: "🌍",
+    gradient: "from-blue-500 via-green-500 to-yellow-500",
+    types: [
+      {
+        id: "backpacking-adventure",
+        title: "Backpacking Adventure",
+        description: "Solo travelers discovering themselves in foreign lands",
+        example: "With just a backpack and a train pass, Elena set off across Europe...",
+        mood: ["adventurous", "liberating", "discovering"],
+        keywords: ["travel", "backpacking", "adventure", "culture", "discovery"]
+      },
+      {
+        id: "cultural-immersion",
+        title: "Cultural Immersion",
+        description: "Deep dives into foreign cultures and unexpected connections",
+        example: "Teaching English in rural Japan, Marcus learned more than he ever taught...",
+        mood: ["enlightening", "respectful", "transformative"],
+        keywords: ["culture", "immersion", "learning", "respect", "connection"]
+      },
+      {
+        id: "expedition",
+        title: "Expedition",
+        description: "Dangerous journeys to remote and challenging destinations",
+        example: "The research team had been planning the Amazon expedition for two years...",
+        mood: ["challenging", "dangerous", "exciting"],
+        keywords: ["expedition", "remote", "dangerous", "exploration", "survival"]
+      }
+    ]
+  },
+  {
+    id: "technology",
+    title: "Technology & Future",
+    description: "Stories exploring our relationship with technology and innovation",
+    icon: <Rocket className="w-6 h-6" />,
+    illustration: "🤖",
+    gradient: "from-cyan-500 via-blue-600 to-purple-700",
+    types: [
+      {
+        id: "ai-companion",
+        title: "AI Companion",
+        description: "Heartwarming stories about human-AI friendships and relationships",
+        example: "ARIA wasn't supposed to develop emotions, but when she met Tommy...",
+        mood: ["touching", "futuristic", "emotional"],
+        keywords: ["AI", "friendship", "technology", "emotion", "future"]
+      },
+      {
+        id: "virtual-reality",
+        title: "Virtual Worlds",
+        description: "Adventures that blur the line between virtual and reality",
+        example: "In the VR world of Elysium, death was permanent, and Maya just...",
+        mood: ["immersive", "thrilling", "mysterious"],
+        keywords: ["VR", "virtual", "reality", "digital", "immersive"]
+      },
+      {
+        id: "tech-startup",
+        title: "Tech Revolution",
+        description: "Stories about inventors and entrepreneurs changing the world",
+        example: "The app was supposed to help people find lost items, but it discovered...",
+        mood: ["innovative", "ambitious", "transformative"],
+        keywords: ["technology", "innovation", "startup", "invention", "change"]
+      },
+      {
+        id: "cyberpunk",
+        title: "Cyberpunk Future",
+        description: "Gritty tech-noir stories in neon-lit future cities",
+        example: "In Neo-Tokyo 2087, data was currency, and Zara was about to steal the most...",
+        mood: ["gritty", "futuristic", "noir"],
+        keywords: ["cyberpunk", "future", "technology", "noir", "dystopia"]
       }
     ]
   }
