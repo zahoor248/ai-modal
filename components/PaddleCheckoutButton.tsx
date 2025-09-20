@@ -1,7 +1,17 @@
 "use client";
 import { useEffect } from "react";
 
-export default function CheckoutButton() {
+interface PaddleCheckoutButtonProps {
+  productId?: string;
+  planName?: string;
+  priceDisplay?: string;
+}
+
+export default function CheckoutButton({
+  productId,
+  planName,
+  priceDisplay
+}: PaddleCheckoutButtonProps) {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.paddle.com/paddle/v2/paddle.js"; // v2 for new checkout
@@ -39,7 +49,7 @@ export default function CheckoutButton() {
       onClick={checkout}
       className="px-6 py-3 bg-black text-white rounded-lg"
     >
-      Buy Now
+      {priceDisplay || "Buy Now"}
     </button>
   );
 }
