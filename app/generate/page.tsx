@@ -197,18 +197,33 @@ export default function EnhancedGeneratePage() {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-8">
+          <div className="space-y-12">
+            {/* Step Header */}
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6 shadow-xl">
+                📚
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Choose Your Genre
+                </span>
+              </h2>
+              <p className="text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed">
+                Select the type of story you'd like to create. Each genre has unique characteristics and storytelling approaches.
+              </p>
+            </div>
+            
             <EnhancedTemplateSelector
               selectedTemplate={selectedTemplate}
               onTemplateSelect={handleTemplateSelect}
             />
             
             {selectedTemplate && (
-              <div className="flex justify-end">
+              <div className="flex justify-center pt-8">
                 <Button 
                   onClick={() => setCurrentStep(2)}
                   size="lg"
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 px-8 py-4"
                 >
                   Continue to Story Builder
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -228,23 +243,34 @@ export default function EnhancedGeneratePage() {
 
       case 3:
         return (
-          <div className="space-y-8 max-w-4xl mx-auto">
+          <div className="space-y-12 max-w-5xl mx-auto">
             <div className="text-center">
-              <div className="text-4xl mb-4">⚙️</div>
-              <h2 className="text-3xl font-serif font-bold mb-2">Final Story Settings</h2>
-              <p className="text-muted-foreground">
-                Choose the length and style for your story
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6 shadow-xl">
+                ⚙️
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Perfect Your Story
+                </span>
+              </h2>
+              <p className="text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed">
+                Fine-tune the length and writing style to create exactly the story you envision
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Story Length */}
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Clock className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Story Length</h3>
+              <Card className="border border-border/50 shadow-xl hover:shadow-2xl hover:border-primary/30 transition-all duration-300 bg-card/80 backdrop-blur-sm">
+                <CardContent className="p-8">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center">
+                        <Clock className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold">Story Length</h3>
+                        <p className="text-sm text-foreground/60">How long should your story be?</p>
+                      </div>
                     </div>
                     
                     <Select value={storyLength} onValueChange={setStoryLength}>
@@ -283,12 +309,17 @@ export default function EnhancedGeneratePage() {
               </Card>
 
               {/* Writing Style */}
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Writing Style</h3>
+              <Card className="border border-border/50 shadow-xl hover:shadow-2xl hover:border-primary/30 transition-all duration-300 bg-card/80 backdrop-blur-sm">
+                <CardContent className="p-8">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold">Writing Style</h3>
+                        <p className="text-sm text-foreground/60">What tone should we use?</p>
+                      </div>
                     </div>
                     
                     <Select value={writingStyle} onValueChange={setWritingStyle}>
@@ -336,12 +367,17 @@ export default function EnhancedGeneratePage() {
             </div>
 
             {/* Story Summary */}
-            <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  Story Summary
-                </h3>
+            <Card className="bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 border-2 border-primary/20 shadow-2xl">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center">
+                    <BookOpen className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Story Summary</h3>
+                    <p className="text-sm text-foreground/60">Review your story details</p>
+                  </div>
+                </div>
                 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -369,11 +405,12 @@ export default function EnhancedGeneratePage() {
             </Card>
 
             {/* Navigation */}
-            <div className="flex justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between pt-8">
               <Button
                 variant="outline"
                 onClick={() => setCurrentStep(2)}
                 size="lg"
+                className="hover:bg-primary/10 hover:border-primary/30 transition-all duration-200"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Story Builder
@@ -382,7 +419,7 @@ export default function EnhancedGeneratePage() {
               <Button
                 onClick={handleGenerate}
                 size="lg"
-                className="bg-primary hover:bg-primary/90"
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
                 Generate My Story
@@ -393,44 +430,87 @@ export default function EnhancedGeneratePage() {
 
       case 4:
         return (
-          <div className="text-center space-y-8 max-w-2xl mx-auto">
-            <div className="space-y-4">
-              <div className="text-6xl mb-6">✨</div>
-              <h2 className="text-3xl font-serif font-bold">Creating Your Story...</h2>
-              <p className="text-muted-foreground text-lg">
-                Our AI is carefully crafting your personalized story based on all the details you've provided.
-              </p>
+          <div className="text-center space-y-12 max-w-4xl mx-auto">
+            {/* Hero Section */}
+            <div className="space-y-8">
+              <div className="relative">
+                <div className="w-32 h-32 bg-gradient-to-br from-primary via-secondary to-accent rounded-full flex items-center justify-center text-6xl mx-auto mb-8 shadow-2xl animate-pulse">
+                  ✨
+                </div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl animate-ping" />
+              </div>
+              
+              <div className="space-y-4">
+                <h2 className="text-4xl lg:text-6xl font-bold">
+                  <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                    Crafting Your Story
+                  </span>
+                </h2>
+                <p className="text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">
+                  Our advanced AI is weaving your ideas into a captivating narrative. This magical process typically takes 30-60 seconds.
+                </p>
+              </div>
             </div>
 
             {/* Generation Progress */}
-            <Card className="border-0 shadow-xl">
-              <CardContent className="p-8">
-                <div className="space-y-6">
+            <Card className="border-2 border-primary/20 shadow-2xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
+              <CardContent className="p-10">
+                <div className="space-y-8">
+                  {/* Animated Loader */}
                   <div className="flex justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <div className="relative">
+                      <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                      <div className="absolute inset-0 w-12 h-12 border-2 border-primary/20 rounded-full animate-ping" />
+                    </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                      <span>Building story structure...</span>
+                  {/* Progress Steps */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                      <div className="w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
+                      <div className="flex-1 text-left">
+                        <span className="font-semibold text-primary">Analyzing Your Concept</span>
+                        <div className="text-sm text-foreground/60 mt-1">Understanding themes, characters, and setting</div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse [animation-delay:0.5s]" />
-                      <span>Developing characters...</span>
+                    
+                    <div className="flex items-center gap-4 p-4 bg-secondary/5 rounded-2xl border border-secondary/10">
+                      <div className="w-3 h-3 bg-gradient-to-r from-secondary to-accent rounded-full animate-pulse [animation-delay:0.5s]" />
+                      <div className="flex-1 text-left">
+                        <span className="font-semibold text-secondary">Building Story Structure</span>
+                        <div className="text-sm text-foreground/60 mt-1">Creating compelling plot and narrative flow</div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-2 h-2 bg-primary/30 rounded-full animate-pulse [animation-delay:1s]" />
-                      <span>Weaving the narrative...</span>
+                    
+                    <div className="flex items-center gap-4 p-4 bg-accent/5 rounded-2xl border border-accent/10">
+                      <div className="w-3 h-3 bg-gradient-to-r from-accent to-primary rounded-full animate-pulse [animation-delay:1s]" />
+                      <div className="flex-1 text-left">
+                        <span className="font-semibold text-accent">Polishing the Magic</span>
+                        <div className="text-sm text-foreground/60 mt-1">Adding final touches and emotional depth</div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: "60%" }} />
+                  {/* Progress Bar */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span className="text-primary">Progress</span>
+                      <span className="text-foreground/70">Creating masterpiece...</span>
+                    </div>
+                    <div className="w-full bg-muted/50 rounded-full h-3 overflow-hidden">
+                      <div className="h-3 bg-gradient-to-r from-primary via-secondary to-accent rounded-full animate-pulse transition-all duration-1000" style={{ width: "70%" }} />
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            
+            {/* Fun Fact */}
+            <div className="text-center p-6 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl border border-primary/20">
+              <p className="text-sm text-foreground/70">
+                💡 <strong>Did you know?</strong> Our AI considers over 1000 storytelling elements to craft your unique narrative!
+              </p>
+            </div>
           </div>
         );
 
@@ -440,72 +520,91 @@ export default function EnhancedGeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
-            <div className="flex items-center gap-3">
-              <div className="text-3xl">📚</div>
-              <div>
-                <h1 className="font-serif text-2xl font-bold">Story Generator</h1>
-                <p className="text-sm text-muted-foreground">Create your perfect story</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      {/* Premium Header */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="hover:bg-primary/10">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Dashboard
+                </Button>
+              </Link>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-2xl">
+                  ✨
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Story Generator
+                  </h1>
+                  <p className="text-sm text-foreground/70">Transform your ideas into captivating stories</p>
+                </div>
               </div>
             </div>
+            <div className="flex items-center gap-4">
+              <Badge variant="secondary" className="hidden sm:flex">
+                Step {currentStep} of 4
+              </Badge>
+              <ThemeSwitcher />
+            </div>
           </div>
-          <ThemeSwitcher />
         </div>
+      </header>
 
-        {/* Progress Steps */}
+      <div className="container mx-auto px-6 py-12">
+
+        {/* Modern Progress Steps */}
         {currentStep <= 3 && (
-          <div className="mb-12">
-            <div className="flex justify-center">
-              <div className="flex items-center gap-4">
-                {generationSteps.slice(0, 3).map((step, index) => {
-                  const Icon = step.icon;
-                  const isActive = currentStep === step.id;
-                  const isCompleted = currentStep > step.id;
-                  
-                  return (
-                    <div key={step.id} className="flex items-center">
-                      <div className={`flex flex-col items-center gap-2 transition-all ${
-                        isActive ? "scale-110" : ""
-                      }`}>
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+          <div className="mb-16">
+            <div className="max-w-4xl mx-auto">
+              <div className="relative">
+                {/* Background Line */}
+                <div className="absolute top-6 left-0 right-0 h-0.5 bg-muted mx-12" />
+                <div 
+                  className="absolute top-6 left-0 h-0.5 bg-gradient-to-r from-primary to-secondary mx-12 transition-all duration-500"
+                  style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+                />
+                
+                {/* Steps */}
+                <div className="relative flex justify-between">
+                  {generationSteps.slice(0, 3).map((step) => {
+                    const Icon = step.icon;
+                    const isActive = currentStep === step.id;
+                    const isCompleted = currentStep > step.id;
+                    
+                    return (
+                      <div key={step.id} className="flex flex-col items-center group">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                           isActive 
-                            ? "bg-primary text-primary-foreground shadow-lg" 
+                            ? "bg-gradient-to-br from-primary to-secondary text-white shadow-xl scale-110" 
                             : isCompleted 
-                              ? "bg-primary/20 text-primary" 
-                              : "bg-muted text-muted-foreground"
+                              ? "bg-gradient-to-br from-primary/20 to-secondary/20 text-primary border-2 border-primary/30" 
+                              : "bg-muted text-muted-foreground hover:bg-muted/80"
                         }`}>
-                          {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                          {isCompleted ? (
+                            <Check className="w-6 h-6" />
+                          ) : (
+                            <Icon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
+                          )}
                         </div>
-                        <div className="text-center">
-                          <div className={`text-sm font-medium ${
+                        
+                        <div className="mt-4 text-center max-w-32">
+                          <div className={`text-sm font-semibold mb-1 transition-colors ${
                             isActive ? "text-primary" : isCompleted ? "text-primary" : "text-muted-foreground"
                           }`}>
                             {step.title}
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-xs text-muted-foreground leading-tight">
                             {step.description}
                           </div>
                         </div>
                       </div>
-                      
-                      {index < 2 && (
-                        <div className={`w-16 h-0.5 mx-4 transition-all ${
-                          isCompleted ? "bg-primary" : "bg-muted"
-                        }`} />
-                      )}
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -513,7 +612,9 @@ export default function EnhancedGeneratePage() {
 
         {/* Step Content */}
         <div className="max-w-7xl mx-auto">
-          {renderStepContent()}
+          <div className="bg-card/30 backdrop-blur-sm rounded-3xl border border-border/50 p-8 shadow-2xl">
+            {renderStepContent()}
+          </div>
         </div>
       </div>
     </div>
