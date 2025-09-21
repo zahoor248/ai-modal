@@ -71,13 +71,12 @@ const generationSteps = [
 export default function EnhancedGeneratePage() {
   const supabase = createClientComponentClient();
   const [currentStep, setCurrentStep] = useState(1);
-
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState("");
   // Template and prompt data
   const [selectedTemplate, setSelectedTemplate] = useState<{
-    category: string;
+    category: any;
     type: string;
-    mood?: string;
-    style?: string;
   } | null>(null);
 
   const [promptData, setPromptData] = useState<any>(null);
@@ -91,8 +90,11 @@ export default function EnhancedGeneratePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedStory, setGeneratedStory] = useState<any>(null);
 
-  const handleTemplateSelect = (template: any) => {
-    setSelectedTemplate(template);
+  const handleTemplateSelect = () => {
+    setSelectedTemplate({
+      category: expandedCategory?.toString(),
+      type: selectedType,
+    });
   };
 
   const handlePromptGenerated = (data: any, prompt: string) => {
@@ -229,21 +231,12 @@ export default function EnhancedGeneratePage() {
 
             <EnhancedTemplateSelector
               selectedTemplate={selectedTemplate}
-              onTemplateSelect={handleTemplateSelect}
+              setSelectedTemplate={setSelectedTemplate}
+              expandedCategory={expandedCategory}
+              setExpandedCategory={setExpandedCategory}
+              selectedType={selectedType}
+              setSelectedType={setSelectedType}
             />
-
-            {selectedTemplate && (
-              <div className="flex justify-center pt-8">
-                <Button
-                  onClick={() => setCurrentStep(2)}
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 px-8 py-4"
-                >
-                  Continue to Story Builder
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </div>
-            )}
           </div>
         );
 
@@ -575,124 +568,175 @@ export default function EnhancedGeneratePage() {
     }
   };
 
+  const completedCount = Math.max(
+    0,
+    Math.min(generationSteps.length, currentStep - 1)
+  );
+  const horizontalFillPercent =
+    generationSteps.length > 1
+      ? (completedCount / (generationSteps.length - 1)) * 100
+      : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    <div className="min-h- bg-gradient-to-br from-background/95 via-primary/80 to-secondary/80">
       {/* Premium Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hover:bg-primary/10"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-2xl">
-                  ✨
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Story Generator
-                  </h1>
-                  <p className="text-sm text-foreground/70">
-                    Transform your ideas into captivating stories
-                  </p>
-                </div>
+      <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          {/* Left side: back + brand */}
+          <div className="flex items-center gap-5">
+            <Link href="/dashboard">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="group bg-background/70 text-foreground transition-all"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
+                <span className="hidden sm:inline">Back</span>
+              </Button>
+            </Link>
+
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl sm:text-2xl shadow-lg">
+                ✨
               </div>
+              <h1 className="text-lg sm:text-2xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
+                Story Birds
+              </h1>
             </div>
-            <div className="flex items-center gap-4">
-              <Badge variant="secondary" className="hidden sm:flex">
-                Step {currentStep} of 4
-              </Badge>
-              <ThemeSwitcher />
+          </div>
+
+          {/* Right side: step + theme */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium">
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              Step {currentStep} of {generationSteps.length}
             </div>
+            <ThemeSwitcher />
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-12">
-        {/* Modern Progress Steps */}
+      {/* Main layout */}
+      <div className="container mx-auto px-6 py-12 flex gap-8">
+        {/* Sticky Vertical Progress */}
         {currentStep <= 3 && (
-          <div className="mb-16">
-            <div className="max-w-4xl mx-auto">
-              <div className="relative">
-                {/* Background Line */}
-                <div className="absolute top-6 left-0 right-0 h-0.5 bg-muted mx-12" />
-                <div
-                  className="absolute top-6 left-0 h-0.5 bg-gradient-to-r from-primary to-secondary mx-12 transition-all duration-500"
-                  style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-                />
+          <aside className="hidden lg:block w-64 sticky top-28 self-start">
+            <div className="relative">
+              {/* Connector line */}
+              <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-muted" />
+              <div
+                className="absolute left-7 top-0 w-0.5 bg-gradient-to-b from-primary to-secondary transition-all duration-700 ease-out"
+                style={{
+                  height: `${
+                    ((currentStep - 1) / (generationSteps.length - 1)) * 100
+                  }%`,
+                }}
+              />
 
-                {/* Steps */}
-                <div className="relative flex justify-between">
-                  {generationSteps.slice(0, 3).map((step) => {
-                    const Icon = step.icon;
+              {/* Steps */}
+              <nav aria-label="Generation steps">
+                <div className="flex flex-col gap-10 relative">
+                  {generationSteps.map((step) => {
                     const isActive = currentStep === step.id;
                     const isCompleted = currentStep > step.id;
+                    const Icon = step.icon;
 
                     return (
-                      <div
+                      <button
                         key={step.id}
-                        className="flex flex-col items-center group"
+                        type="button"
+                        aria-current={isActive ? "step" : undefined}
+                        className="flex items-start gap-4 text-left focus:outline-none"
                       >
+                        {/* Step Node */}
                         <div
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                            isActive
-                              ? "bg-gradient-to-br from-primary to-secondary text-white shadow-xl scale-110"
-                              : isCompleted
-                              ? "bg-gradient-to-br from-primary/20 to-secondary/20 text-primary border-2 border-primary/30"
-                              : "bg-muted text-muted-foreground hover:bg-muted/80"
+                          className={`relative flex items-center justify-center w-14 h-14 rounded-2xl shrink-0 transition-transform duration-300 ${
+                            isActive ? "scale-105" : ""
                           }`}
                         >
-                          {isCompleted ? (
-                            <Check className="w-6 h-6" />
-                          ) : (
-                            <Icon
-                              className={`w-5 h-5 ${
-                                isActive ? "animate-pulse" : ""
-                              }`}
+                          <div
+                            className={`absolute inset-0 rounded-2xl backdrop-blur-sm border border-white/8 ${
+                              isActive
+                                ? "bg-gradient-to-br from-primary/80 to-secondary/80 shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
+                                : isCompleted
+                                ? "bg-gradient-to-br from-primary/20 to-secondary/20 ring-1 ring-primary/30"
+                                : "bg-white/4"
+                            }`}
+                          />
+                          <div className="relative z-10">
+                            {isCompleted ? (
+                              <Check className="w-6 h-6 text-white" />
+                            ) : (
+                              <Icon
+                                className={`w-6 h-6 ${
+                                  isActive
+                                    ? "text-white"
+                                    : "text-muted-foreground"
+                                }`}
+                              />
+                            )}
+                          </div>
+                          {isActive && (
+                            <span
+                              className="absolute -inset-1 rounded-2xl blur-2xl opacity-40"
+                              style={{ background: "rgba(99,102,241,0.15)" }}
                             />
                           )}
                         </div>
 
-                        <div className="mt-4 text-center max-w-32">
-                          <div
-                            className={`text-sm font-semibold mb-1 transition-colors ${
+                        {/* Text */}
+                        <div className="flex flex-col">
+                          <span
+                            className={`text-sm font-semibold transition-colors ${
                               isActive
                                 ? "text-primary"
                                 : isCompleted
-                                ? "text-primary"
+                                ? "text-primary/90"
                                 : "text-muted-foreground"
                             }`}
                           >
                             {step.title}
-                          </div>
-                          <div className="text-xs text-muted-foreground leading-tight">
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-1">
                             {step.description}
-                          </div>
+                          </span>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
-              </div>
+              </nav>
             </div>
-          </div>
+          </aside>
         )}
 
         {/* Step Content */}
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-card/30 backdrop-blur-sm rounded-3xl border border-border/50 p-8 shadow-2xl">
-            {renderStepContent()}
+        <main className="flex-1">
+          <div className=" -6">{renderStepContent()}</div>
+        </main>
+      </div>
+
+      {/* Bottom fixed button for step 1 */}
+      {currentStep === 1 && (
+        <div className="fixed bottom-0 inset-x-0 z-50 bg-background/30 backdrop-blur-lg border-t border-border/50">
+          <div className="container mx-auto px-6 py-4 flex justify-end">
+            <Button
+              onClick={() => {
+                handleTemplateSelect();
+                setCurrentStep(2);
+              }}
+              size="lg"
+              className="w-full !rounded-xs sm:w-auto bg-gradient-to-r from-primary to-secondary 
+            hover:from-primary/90 hover:to-secondary/90 
+            text-white shadow-xl hover:shadow-2xl hover:scale-105 
+            transition-all duration-200 px-8 py-4"
+            >
+              Continue to Story Builder
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,50 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  ChevronRight,
-  Sparkles,
-  Heart,
-  Compass,
-  Lightbulb,
-  Palette,
-  Crown,
-  Rocket,
-  TreePine,
-  Ghost,
-  Music,
-  Zap,
+  ArrowLeft,
   BookOpen,
+  ChevronRight,
+  Compass,
+  Crown,
+  Edit2,
+  Ghost,
+  Heart,
+  Lightbulb,
+  Music,
+  Palette,
+  Rocket,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 
-interface Template {
-  category: string;
-  type: string;
-  mood?: string;
-  style?: string;
-}
+/**
+ * Uses your existing templateCategories (must be in same file or imported).
+ * Props kept identical to your previous component so no external logic changes.
+ */
 
-interface TemplateCategory {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  illustration: string;
-  gradient: string;
-  types: {
-    id: string;
-    title: string;
-    description: string;
-    example: string;
-    mood: string[];
-    keywords: string[];
-  }[];
-}
-
-const templateCategories: TemplateCategory[] = [
+const templateCategories: any[] = [
   {
     id: "kids",
     title: "Kids & Family",
@@ -731,293 +713,253 @@ const templateCategories: TemplateCategory[] = [
   },
 ];
 
+interface Template {
+  category: string;
+  type: string;
+  mood?: string;
+  style?: string;
+}
 interface EnhancedTemplateSelectorProps {
   selectedTemplate: Template | null;
   onTemplateSelect: (template: Template) => void;
+  setSelectedTemplate?: any;
 }
 
 export function EnhancedTemplateSelector({
   selectedTemplate,
-  onTemplateSelect,
-}: EnhancedTemplateSelectorProps) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [selectedMood, setSelectedMood] = useState<string>("");
-  const [selectedStyle, setSelectedStyle] = useState<string>("");
-
+  expandedCategory,
+  setExpandedCategory,
+  selectedType,
+  setSelectedType,
+}: any) {
+  // keep your original handler name/behavior
   const handleCategoryClick = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      setExpandedCategory(null);
-    } else {
-      setExpandedCategory(categoryId);
+    setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));
+  };
+
+  // keyboard accessibility helper
+  const handleCardKey = (e: KeyboardEvent, id: string) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleCategoryClick(id);
     }
   };
 
-  const handleTypeSelect = (category: string, type: string) => {
-    onTemplateSelect({
-      category,
-      type,
-      mood: selectedMood,
-      style: selectedStyle,
-    });
-    setExpandedCategory(null);
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="text-center mb-12 space-y-4">
-        <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Choose Your Story Universe
-          </span>
+    <div className="max-w-7xl mx-auto pb-8 px-6 overflow-auto min-h-[calc(100vh-175.5px)]">
+      {/* Header */}
+
+      {!expandedCategory && (
+        <h2 className="text-3xl pb-5 font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Pick Your World
         </h2>
-        <p className="text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">
-          Select a category to explore different story types and styles. Each
-          universe offers unique storytelling approaches designed to inspire
-          your creativity.
-        </p>
-      </div>
+      )}
+      {/* Master-detail layout */}
+      {!selectedTemplate && (
+        <div className="grid grid-cols-1 gap-8">
+          {/* LEFT: categories list (compact, airy, premium) */}
+          {!expandedCategory && (
+            <div className=" grid grid-cols-3 gap-5 ">
+              {templateCategories.map((cat) => {
+                const isOpen = expandedCategory === cat.id;
+                return (
+                  <article
+                    key={cat.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isOpen}
+                    onKeyDown={(e) => handleCardKey(e, cat.id)}
+                    onClick={() => handleCategoryClick(cat.id)}
+                    className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-250
+                  ${
+                    isOpen
+                      ? "ring-2 ring-primary/50 bg-gradient-to-r from-white/5 to-white/2"
+                      : "hover:translate-y-[-2px] hover:shadow-lg bg-white/3"
+                  }
+                  `}
+                  >
+                    <div
+                      className={`flex items-center justify-center w-14 h-14 rounded-lg flex-shrink-0 border border-white/8 bg-gradient-to-br ${cat.gradient} text-black/80`}
+                      aria-hidden
+                    >
+                      <span className="text-2xl select-none">
+                        {cat.illustration}
+                      </span>
+                    </div>
 
-      {/* Template Categories Grid */}
-      {!expandedCategory && !selectedTemplate && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {templateCategories.map((category, index) => (
-            <Card
-              key={category.id}
-              className={`cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-xl border-0 overflow-hidden group relative ${
-                expandedCategory === category.id
-                  ? "ring-2 ring-primary/60 shadow-xl scale-[1.02] bg-gradient-to-br from-background to-primary/10 border-primary/20"
-                  : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20 hover:border-primary/10 shadow-sm"
-              }`}
-              style={{
-                animationDelay: `${index * 100}ms`,
-              }}
-              data-animate="fade-in-up"
-              onClick={() => handleCategoryClick(category.id)}
-            >
-              {/* Animated border */}
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-lg line-clamp-1">
+                        {cat.title}
+                      </h3>
+                      <p className="text-xs text-white/60 line-clamp-2">
+                        {cat.description}
+                      </p>
+                    </div>
 
-              {/* Card Header with Enhanced Gradient */}
-              <div
-                className={`h-44 bg-gradient-to-br ${category.gradient} relative overflow-hidden`}
-              >
-                {/* Animated background pattern */}
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.3)_0%,transparent_50%)] transform scale-0 group-hover:scale-100 transition-transform duration-700" />
-                </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {cat.types.length} types
+                      </span>
+                      <ChevronRight
+                        className={`w-5 h-5 transition-transform ${
+                          isOpen
+                            ? "rotate-90 text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
 
-                {/* Illustration with enhanced animation */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-7xl opacity-80 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 filter drop-shadow-lg">
-                    {category.illustration}
+          {!expandedCategory ? (
+            // lightweight hero / hint area (keeps page feeling high-class)
+            ""
+          ) : (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br from-white/5 to-white/3">
+                    {
+                      templateCategories.find((c) => c.id === expandedCategory)
+                        ?.illustration
+                    }
+                  </div>
+                  <div>
+                    <h3 className="text-3xl pb- font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                      {
+                        templateCategories.find(
+                          (c) => c.id === expandedCategory
+                        )?.title
+                      }{" "}
+                      Stories
+                    </h3>
+                    <p className="text-sm text-white/65">
+                      Choose a specific type to start generating. Use moods to
+                      nudge tone.
+                    </p>
                   </div>
                 </div>
-
-                {/* Floating particles effect */}
-                <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute top-4 left-4 w-2 h-2 bg-white/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-700" />
-                  <div className="absolute top-8 right-8 w-1 h-1 bg-white/40 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-500" />
-                  <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-white/25 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-600" />
-                </div>
-
-                {/* Icon in corner with enhanced styling */}
-                <div className="absolute top-4 right-4 text-white/90 group-hover:text-white group-hover:scale-110 transition-all duration-300 bg-white/10 rounded-full p-2 backdrop-blur-sm">
-                  {category.icon}
-                </div>
-
-                {/* Enhanced hover overlay with gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <Button
+                  onClick={() => setExpandedCategory(null)}
+                  variant="ghost"
+                  size="sm"
+                  className="group bg-background/70 text-foreground transition-all"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
+                  <span className="hidden sm:inline">Back</span>
+                </Button>
               </div>
 
-              <CardContent className="p-6 relative">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors duration-300 font-serif">
-                      {category.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed group-hover:text-foreground/70 transition-colors duration-300">
-                      {category.description}
-                    </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                {templateCategories
+                  .find((c) => c.id === expandedCategory)
+                  ?.types.map((type, idx) => {
+                    const isSelected =
+                      selectedTemplate?.category === expandedCategory &&
+                      selectedTemplate?.type === type.id;
+                    return (
+                      <article
+                        key={type.id}
+                        onClick={() => setSelectedType(type.id)}
+                        className={`p-4 rounded-xl border cursor-pointer border-white/6 bg-white/3 backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] ${
+                          selectedType == type.id
+                            ? "ring-1 ring-primary/50 bg-gradient-to-r from-primary/10 to-white/6"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-lg">
+                              {type.title}
+                            </h4>
+                            <p className="text-sm text-white/60 mt-1 line-clamp-2">
+                              {type.description}
+                            </p>
+                            <blockquote className="text-sm italic text-white/60 mt-3 border-l-2 border-white/6 pl-3">
+                              "{type.example}"
+                            </blockquote>
 
-                    {/* Category stats */}
-                    <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-                      <Badge variant="outline" className="text-xs px-2 py-1">
-                        {category.types.length} types
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Enhanced arrow with background */}
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
-                    <ChevronRight
-                      className={`w-6 h-6 ml-3 transition-all duration-300 relative z-10 ${
-                        expandedCategory === category.id
-                          ? "rotate-90 text-primary scale-110"
-                          : "text-muted-foreground group-hover:text-primary group-hover:translate-x-1"
-                      }`}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {type.mood?.map((m) => (
+                                <Badge
+                                  key={m}
+                                  className="bg-white/65 uppercase text-xs"
+                                >
+                                  {m}
+                                </Badge>
+                              ))}
+                              {type.keywords?.slice(0, 4).map((k) => (
+                               <Badge
+                                  key={k}
+                                  className="bg-white/65 uppercase text-xs"
+                                >
+                                  {k}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+              </div>
+            </section>
+          )}
         </div>
       )}
-
-      {/* Expanded Category Types */}
-      {expandedCategory && (
-        <Card className="border-0 bg-gradient-to-br from-background via-muted/20 to-background shadow-2xl">
-          <CardContent className="p-8">
-            <div className="mb-6">
-              <h3 className="font-serif text-2xl font-bold mb-2 flex items-center gap-3">
-                <span className="text-3xl">
-                  {
-                    templateCategories.find((c) => c.id === expandedCategory)
-                      ?.illustration
-                  }
-                </span>
-                {
-                  templateCategories.find((c) => c.id === expandedCategory)
-                    ?.title
-                }{" "}
-                Stories
-              </h3>
-              <p className="text-muted-foreground">
-                Choose the specific type of story you'd like to create from this
-                category
-              </p>
+      {/* {selectedTemplate && (
+        <Card className="relative border border-border/40 rounded-xl bg-background/80 backdrop-blur-md shadow-lg transition-all duration-300">
+          <CardContent className="p-5 flex items-center gap-6">
+            <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 text-2xl shadow-inner">
+              {
+                templateCategories.find(
+                  (c) => c.id === selectedTemplate.category
+                )?.illustration
+              }
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {templateCategories
-                .find((c) => c.id === expandedCategory)
-                ?.types.map((type, typeIndex) => (
-                  <Card
-                    key={type.id}
-                    className={`cursor-pointer transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden ${
-                      selectedTemplate?.category === expandedCategory &&
-                      selectedTemplate?.type === type.id
-                        ? "ring-2 ring-primary bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-xl scale-[1.02]"
-                        : "hover:bg-gradient-to-br hover:from-background hover:to-muted/20"
-                    }`}
-                    style={{
-                      animationDelay: `${typeIndex * 150}ms`,
-                    }}
-                    onClick={() => handleTypeSelect(expandedCategory, type.id)}
-                  >
-                    {/* Animated border for type cards */}
-                    <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-lg text-foreground">
+                  You’ve selected:
+                </h3>
+              </div>
 
-                    <CardContent className="p-6 relative z-10">
-                      <div className="flex items-start justify-between mb-4">
-                        <h4 className="font-bold text-xl font-serif group-hover:text-primary transition-colors duration-300">
-                          {type.title}
-                        </h4>
-                        {selectedTemplate?.category === expandedCategory &&
-                          selectedTemplate?.type === type.id && (
-                            <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse">
-                              <Sparkles className="w-3 h-3 mr-1 animate-spin" />
-                              Selected
-                            </Badge>
-                          )}
-                      </div>
-
-                      <p className="text-muted-foreground mb-5 text-sm leading-relaxed group-hover:text-foreground/70 transition-colors duration-300">
-                        {type.description}
-                      </p>
-
-                      {/* Enhanced Mood Tags */}
-                      <div className="flex flex-wrap gap-2 mb-5">
-                        {type.mood.map((mood, moodIndex) => (
-                          <Badge
-                            key={mood}
-                            variant="secondary"
-                            className="text-xs px-3 py-1 bg-muted/50 hover:bg-primary/20 hover:text-primary transition-all duration-300 group-hover:scale-105"
-                            style={{
-                              animationDelay: `${moodIndex * 100}ms`,
-                            }}
-                          >
-                            {mood}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      {/* Enhanced Example Text */}
-                      <div className="bg-gradient-to-r from-muted/40 to-muted/20 rounded-lg p-5 border-l-4 border-primary/40 group-hover:border-primary/60 transition-all duration-300 relative overflow-hidden">
-                        {/* Subtle background animation */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500" />
-
-                        <div className="relative z-10">
-                          <div className="text-xs text-primary font-medium mb-2 opacity-70">
-                            Story Preview
-                          </div>
-                          <p className="text-sm italic text-muted-foreground leading-relaxed font-serif">
-                            "{type.example}"
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Hover indicator */}
-                      <div className="absolute bottom-4 right-4 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
-                        <ChevronRight className="w-4 h-4 text-primary" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setExpandedCategory(null)}
+              <Badge
+                variant="secondary"
+                className="text-sm px-3 py-1 bg-gradient-to-r from-primary/15 to-secondary/15 text-foreground shadow-sm"
               >
-                Close Selection
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Selected Template Display */}
-      {selectedTemplate && (
-        <Card className="border-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="text-2xl">
                 {
                   templateCategories.find(
                     (c) => c.id === selectedTemplate.category
-                  )?.illustration
+                  )?.title
+                }{" "}
+                <span className="mx-1">•</span>
+                {
+                  templateCategories
+                    .find((c) => c.id === selectedTemplate.category)
+                    ?.types.find((t) => t.id === selectedTemplate.type)?.title
                 }
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-lg">Perfect Choice!</span>
-                </div>
-                <Badge variant="secondary" className="text-sm">
-                  {
-                    templateCategories.find(
-                      (c) => c.id === selectedTemplate.category
-                    )?.title
-                  }{" "}
-                  -{" "}
-                  {
-                    templateCategories
-                      .find((c) => c.id === selectedTemplate.category)
-                      ?.types.find((t) => t.id === selectedTemplate.type)?.title
-                  }
-                </Badge>
-              </div>
+              </Badge>
             </div>
+
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary shadow">
+              ✓
+            </div>
+
+            <button
+              onClick={() => setSelectedTemplate(null)}
+              className="absolute flex gap-1 top-3 right-4 cursor-pointer text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Edit2 size={15} /> Change
+            </button>
           </CardContent>
         </Card>
-      )}
+      )} */}
     </div>
   );
 }

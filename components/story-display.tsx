@@ -26,12 +26,13 @@ import {
   Crown,
   Palette,
   Printer,
-  Eye
+  Eye,
 } from "lucide-react";
 import { StoryEditor } from "@/components/story-editor";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useTypewriter } from "./TyprWriterEffect";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { PDFBuilder } from "./ui/pdf-builder";
 
 interface Story {
   id: string;
@@ -61,7 +62,11 @@ export function StoryDisplay({
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showPDFMenu, setShowPDFMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [viewCount, setViewCount] = useState(Math.floor(Math.random() * 50) + 1);
+  const [showPDFBuilder, setShowPDFBuilder] = useState(false);
+
+  const [viewCount, setViewCount] = useState(
+    Math.floor(Math.random() * 50) + 1
+  );
 
   useEffect(() => {
     setCurrentStory(story);
@@ -93,11 +98,13 @@ export function StoryDisplay({
 
   const handleCopyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(`${currentStory.title}\n\n${currentStory.content}`);
+      await navigator.clipboard.writeText(
+        `${currentStory.title}\n\n${currentStory.content}`
+      );
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy text: ', err);
+      console.error("Failed to copy text: ", err);
     }
   };
 
@@ -121,18 +128,28 @@ export function StoryDisplay({
   const handleSocialShare = (platform: string) => {
     const storyUrl = `${window.location.origin}/story/${currentStory.id}`;
     const text = `Check out this amazing story: "${currentStory.title}" 📚✨`;
-    
+
     switch (platform) {
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(storyUrl)}`);
+      case "twitter":
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            text
+          )}&url=${encodeURIComponent(storyUrl)}`
+        );
         break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storyUrl)}`);
+      case "facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            storyUrl
+          )}`
+        );
         break;
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${storyUrl}`)}`);
+      case "whatsapp":
+        window.open(
+          `https://wa.me/?text=${encodeURIComponent(`${text} ${storyUrl}`)}`
+        );
         break;
-      case 'copy':
+      case "copy":
         handleCopyToClipboard();
         break;
     }
@@ -214,8 +231,8 @@ export function StoryDisplay({
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 animate-in slide-in-from-top duration-500">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={onReset}
             className="hover:bg-primary/10 transition-all duration-300 hover:scale-105"
           >
@@ -252,10 +269,13 @@ export function StoryDisplay({
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 to-transparent rounded-full -translate-y-16 translate-x-16" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary/10 to-transparent rounded-full translate-y-12 -translate-x-12" />
-              
+
               <div className="relative z-10">
                 <div className="flex items-center justify-center gap-3 mb-6">
-                  <Badge variant="secondary" className="text-sm px-4 py-2 bg-primary/10 text-primary border-primary/20">
+                  <Badge
+                    variant="secondary"
+                    className="text-sm px-4 py-2 bg-primary/10 text-primary border-primary/20"
+                  >
                     <Crown className="w-3 h-3 mr-1" />
                     {currentStory?.template?.charAt(0)?.toUpperCase() +
                       currentStory?.template?.slice(1)}{" "}
@@ -289,8 +309,6 @@ export function StoryDisplay({
                     {currentStory.content ? (
                       <div className="relative">
                         <div className="animate-pulse opacity-80">
-
-                          
                           {/* {currentStory.content.split('\n\n').map((paragraph, index) => (
                             <p key={index} className="mb-4 last:mb-0 leading-relaxed">{paragraph}</p>
                           ))} */}
@@ -303,7 +321,9 @@ export function StoryDisplay({
                             <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                             <div className="w-2 h-2 bg-accent rounded-full animate-bounce"></div>
                           </div>
-                          <span className="ml-3 text-sm text-muted-foreground">Story in progress...</span>
+                          <span className="ml-3 text-sm text-muted-foreground">
+                            Story in progress...
+                          </span>
                         </div>
                       </div>
                     ) : (
@@ -313,20 +333,24 @@ export function StoryDisplay({
                           <div className="w-3 h-3 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                           <div className="w-3 h-3 bg-accent rounded-full animate-bounce"></div>
                         </div>
-                        <p className="text-muted-foreground">Crafting your story...</p>
+                        <p className="text-muted-foreground">
+                          Crafting your story...
+                        </p>
                       </div>
                     )}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {currentStory.content.split('\n\n').map((paragraph, index) => (
-                      <p key={index} className="mb-4 last:mb-0 leading-relaxed text-foreground/90">
-                        {paragraph}
-                      </p>
-                    ))}
-
-
-                    
+                    {currentStory.content
+                      .split("\n\n")
+                      .map((paragraph, index) => (
+                        <p
+                          key={index}
+                          className="mb-4 last:mb-0 leading-relaxed text-foreground/90"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
                   </div>
                 )}
               </div>
@@ -339,7 +363,7 @@ export function StoryDisplay({
               {/* Decorative elements */}
               <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-10 -translate-x-10" />
               <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-secondary/10 to-transparent rounded-full translate-y-8 translate-x-8" />
-              
+
               <div className="relative z-10">
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-serif font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -414,7 +438,15 @@ export function StoryDisplay({
                       <Download className="w-4 h-4" />
                       PDF
                     </Button>
-                    
+
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowPDFBuilder(!showPDFBuilder)}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Customize PDF
+                    </Button>
                     {/* PDF Menu */}
                     {showPDFMenu && (
                       <Card className="absolute top-full left-0 mt-2 w-64 z-50 shadow-2xl border bg-card animate-in fade-in slide-in-from-top-2 duration-300">
@@ -425,10 +457,30 @@ export function StoryDisplay({
                           </h4>
                           <div className="space-y-2">
                             {[
-                              { id: 'classic', name: 'Classic', desc: 'Traditional book style', icon: '📚' },
-                              { id: 'modern', name: 'Modern', desc: 'Clean contemporary', icon: '✨' },
-                              { id: 'vintage', name: 'Vintage', desc: 'Aged parchment look', icon: '📜' },
-                              { id: 'colorful', name: 'Colorful', desc: 'Vibrant illustrations', icon: '🎨' }
+                              {
+                                id: "classic",
+                                name: "Classic",
+                                desc: "Traditional book style",
+                                icon: "📚",
+                              },
+                              {
+                                id: "modern",
+                                name: "Modern",
+                                desc: "Clean contemporary",
+                                icon: "✨",
+                              },
+                              {
+                                id: "vintage",
+                                name: "Vintage",
+                                desc: "Aged parchment look",
+                                icon: "📜",
+                              },
+                              {
+                                id: "colorful",
+                                name: "Colorful",
+                                desc: "Vibrant illustrations",
+                                icon: "🎨",
+                              },
                             ].map((template) => (
                               <button
                                 key={template.id}
@@ -437,8 +489,12 @@ export function StoryDisplay({
                               >
                                 <span className="text-lg">{template.icon}</span>
                                 <div>
-                                  <p className="font-medium text-sm">{template.name}</p>
-                                  <p className="text-xs text-muted-foreground">{template.desc}</p>
+                                  <p className="font-medium text-sm">
+                                    {template.name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {template.desc}
+                                  </p>
                                 </div>
                               </button>
                             ))}
@@ -459,7 +515,7 @@ export function StoryDisplay({
                       <Share2 className="w-4 h-4" />
                       Share
                     </Button>
-                    
+
                     {/* Share Menu */}
                     {showShareMenu && (
                       <Card className="absolute top-full right-0 mt-2 w-56 z-50 shadow-2xl border bg-card animate-in fade-in slide-in-from-top-2 duration-300">
@@ -470,10 +526,32 @@ export function StoryDisplay({
                           </h4>
                           <div className="space-y-2">
                             {[
-                              { id: 'twitter', name: 'Twitter/X', icon: <Twitter className="w-4 h-4" />, color: 'text-sky-500' },
-                              { id: 'facebook', name: 'Facebook', icon: <Facebook className="w-4 h-4" />, color: 'text-blue-600' },
-                              { id: 'whatsapp', name: 'WhatsApp', icon: <MessageCircle className="w-4 h-4" />, color: 'text-green-500' },
-                              { id: 'copy', name: copySuccess ? 'Copied!' : 'Copy Link', icon: <Copy className="w-4 h-4" />, color: copySuccess ? 'text-green-500' : 'text-gray-500' }
+                              {
+                                id: "twitter",
+                                name: "Twitter/X",
+                                icon: <Twitter className="w-4 h-4" />,
+                                color: "text-sky-500",
+                              },
+                              {
+                                id: "facebook",
+                                name: "Facebook",
+                                icon: <Facebook className="w-4 h-4" />,
+                                color: "text-blue-600",
+                              },
+                              {
+                                id: "whatsapp",
+                                name: "WhatsApp",
+                                icon: <MessageCircle className="w-4 h-4" />,
+                                color: "text-green-500",
+                              },
+                              {
+                                id: "copy",
+                                name: copySuccess ? "Copied!" : "Copy Link",
+                                icon: <Copy className="w-4 h-4" />,
+                                color: copySuccess
+                                  ? "text-green-500"
+                                  : "text-gray-500",
+                              },
                             ].map((platform) => (
                               <button
                                 key={platform.id}
@@ -514,6 +592,22 @@ export function StoryDisplay({
           </Card>
         </div>
       </div>
+      {showPDFBuilder && (
+        <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-50 p-6 overflow-auto">
+          <div className="bg-card rounded-xl shadow-2xl w-full max-w-4xl p-6 relative">
+            <button
+              onClick={() => setShowPDFBuilder(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-red-500"
+            >
+              ✕
+            </button>
+            <PDFBuilder
+              story={currentStory.content}
+              title={currentStory.title}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
