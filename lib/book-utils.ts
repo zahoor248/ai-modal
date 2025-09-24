@@ -1,119 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 
-/**
- * Types
- */
-export interface PageContent {
-  type: string;
-  text?: string;
-  level?: number;
-  children?: PageContent[];
-}
-
-export interface PageMetadata {
-  title: string;
-  description?: string;
-  wordCount: number;
-  pageNumber: number;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-}
-
-export interface PageStyle {
-  fontSize: number;
-  fontFamily: string;
-  lineHeight: number;
-  alignment: "left" | "center" | "right" | "justify";
-  margins: {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-  };
-  backgroundColor: string;
-  textColor: string;
-}
-
-export interface BookPage {
-  id: string;
-  uuid: string;
-  templateId: string;
-  type: "content" | "toc" | "cover";
-  title: string;
-  content: PageContent[];
-  metadata: PageMetadata;
-  style: PageStyle;
-  status: "draft" | "published" | "archived";
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-}
-
-export interface BookData {
-  id: string;
-  uuid: string;
-  title: string;
-  author_name: string;
-  pages: BookPage[];
-  status: "draft" | "published" | "archived";
-  created_at: string;
-  updated_at: string;
-  metadata: {
-    title: string;
-    author: string;
-    description: string;
-    language: string;
-    status: "draft" | "published" | "archived";
-    tags: string[];
-    wordCount: number;
-    pageCount: number;
-    categories: string[];
-    customFields: Record<string, string>;
-  };
-  settings: {
-    fontFamily: string;
-    fontSize: number;
-    lineHeight: number;
-    textColor: string;
-    backgroundColor: string;
-    margins: {
-      top: number;
-      right: number;
-      bottom: number;
-      left: number;
-    };
-    pageNumberStyle: {
-      position: "header" | "footer";
-      alignment: "left" | "center" | "right";
-      fontSize: number;
-      showOnFirstPage: boolean;
-    };
-  };
-  collaborators: {
-    id: string;
-    role: "owner" | "editor" | "viewer";
-    permissions: string[];
-  }[];
-  permissions: {
-    canEdit: string[];
-    canView: string[];
-    canShare: string[];
-  };
-  export_settings: {
-    pdf: {
-      pageSize: "A4" | "Letter";
-      margins: { top: number; right: number; bottom: number; left: number };
-      includeToc: boolean;
-      includePageNumbers: boolean;
-    };
-    epub: { includeMetadata: boolean; compressImages: boolean };
-    html: { includeCss: boolean; inlineStyles: boolean };
-  };
-  custom_fields: Record<string, string>;
-}
+// Import types from the canonical types/book.ts
+import type { 
+  BookPage, 
+  PageContent, 
+  BookData, 
+  PageType, 
+  PageMetadata, 
+  PageStyles,
+  PageNavigation,
+  PageStatus
+} from "@/types/book";
 
 /**
  * Utils
@@ -121,259 +18,414 @@ export interface BookData {
 export const updatePageNumbers = (pages: BookPage[]): BookPage[] =>
   pages.map((page, index) => ({
     ...page,
-    metadata: {
-      ...page.metadata,
-      pageNumber: index + 1,
-    },
+    pageNumber: index + 1,
+    navigation: {
+      ...page.navigation,
+      position: {
+        ...page.navigation.position,
+        absolute: index + 1
+      }
+    }
   }));
 
-export const createPageFromTemplate = (
-    templateId: string,
-    type: BookPage["type"],
-    title: string,
-    content: PageContent[],
-    userId = "system"
-): any => {
+/**
+ * Creates a new page from a template
+ */
+export function createPageFromTemplate(
+  templateId: string,
+  pageType: PageType,
+  title: string,
+  content: any[] = [],
+  userId: string = 'system',
+  customOptions: any = {}
+): BookPage {
   const now = new Date().toISOString();
-  return {
-    id: `page-${Date.now()}-${Math.random()}`,
-    uuid: uuidv4(),
-    templateId,
-    type,
-    title,
-    content,
-    metadata: {
-      title,
-      description: "",
-      wordCount: content.reduce(
-        (acc, c) => acc + (c.text ? c.text.split(/\s+/).length : 0),
-        0
-      ),
-      pageNumber: 0, // assigned later
-      createdAt: now,
-      updatedAt: now,
-      createdBy: userId,
-      updatedBy: userId,
-    },
-    style: {
-      fontSize: 12,
-      fontFamily: "Times New Roman",
-      lineHeight: 1.5,
-      alignment: "left",
-      margins: { top: 72, right: 72, bottom: 72, left: 72 },
-      backgroundColor: "#ffffff",
-      textColor: "#000000",
-    },
-    status: "draft",
-    createdAt: now,
-    updatedAt: now,
+  const pageId = uuidv4();
+  
+  // Create default page content
+  const defaultContent: PageContent = {
+    blocks: content.map(block => ({
+      type: block.type || 'paragraph',
+      content: block.text || block.content || '',
+      level: block.level || undefined
+    })),
+    version: 1,
+    lastModified: now,
+    lastModifiedBy: userId,
+    title: title,
+    ...customOptions.customContent
+  };
+
+  // Create default metadata
+  const defaultMetadata: PageMetadata = {
+    created: now,
+    updated: now,
     createdBy: userId,
     updatedBy: userId,
+    status: 'draft' as PageStatus,
+    tags: customOptions.customMetadata?.tags || [],
+    wordCount: 0,
+    characterCount: 0,
+    readingTime: 0,
+    customMetadata: {
+      status: 'draft',
+      tags: [pageType]
+    },
+    ...customOptions.customMetadata
   };
-};
 
-export function createDefaultBook(): BookData {
+  // Create default styles
+  const defaultStyles: PageStyles = {
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '16px',
+    lineHeight: 1.6,
+    textAlign: 'left',
+    textColor: '#000000',
+    backgroundColor: '#ffffff',
+    margin: {
+      top: '2cm',
+      right: '2cm',
+      bottom: '2cm',
+      left: '2cm'
+    },
+    padding: '0'
+  };
+
+  // Create default navigation
+  const defaultNavigation: PageNavigation = {
+    parentId: null,
+    firstChildId: null,
+    lastChildId: null,
+    previousSiblingId: null,
+    nextSiblingId: null,
+    previousPageId: null,
+    nextPageId: null,
+    depth: 0,
+    path: [],
+    position: {
+      absolute: 1,
+      chapter: 1,
+      section: 1
+    },
+    isExpanded: false,
+    isVisibleInToc: pageType !== 'blank'
+  };
+
+  return {
+    id: pageId,
+    uuid: pageId,
+    templateId,
+    type: pageType,
+    title,
+    subtitle: customOptions.subtitle,
+    content: defaultContent,
+    layout: customOptions.layout || 'standard',
+    styles: defaultStyles,
+    metadata: defaultMetadata,
+    navigation: defaultNavigation,
+    isVisible: true,
+    isLocked: false,
+    version: 1,
+    pageNumber: 1,
+    pageNumberStyle: {
+      position: 'footer',
+      alignment: 'center',
+      format: '1',
+      startAt: 1,
+      showInToc: true
+    },
+    customFields: customOptions.customFields || {}
+  };
+}
+
+/**
+ * Creates a default book structure
+ */
+export function createDefaultBook(userId: string = 'system'): BookData {
   const now = new Date().toISOString();
-  const userId = "system";
+  const bookId = uuidv4();
 
-  const defaultBook: BookData = {
-    id: `book-${Date.now()}`,
-    uuid: uuidv4(),
-    title: "Untitled Book",
-    author_name: "Unknown Author",
-    pages: [],
-    status: "draft",
-    created_at: now,
-    updated_at: now,
-    metadata: {
-      title: "Untitled Book",
-      author: "Unknown Author",
-      description: "A new book created with the book builder",
-      language: "en-US",
-      status: "draft",
-      tags: ["draft"],
-      wordCount: 0,
-      pageCount: 0,
-      categories: ["Uncategorized"],
-      customFields: {},
-    },
-    settings: {
-      fontFamily: "Times New Roman",
-      fontSize: 12,
-      lineHeight: 1.5,
-      textColor: "#000000",
-      backgroundColor: "#ffffff",
-      margins: { top: 72, right: 72, bottom: 72, left: 72 },
-      pageNumberStyle: {
-        position: "footer",
-        alignment: "center",
-        fontSize: 10,
-        showOnFirstPage: false,
-      },
-    },
-    collaborators: [
-      {
-        id: userId,
-        role: "owner",
-        permissions: ["edit", "view", "share"],
-      },
-    ],
-    permissions: {
-      canEdit: [userId],
-      canView: [userId],
-      canShare: [userId],
-    },
-    export_settings: {
-      pdf: {
-        pageSize: "A4",
-        margins: { top: 72, right: 72, bottom: 72, left: 72 },
-        includeToc: true,
-        includePageNumbers: true,
-      },
-      epub: { includeMetadata: true, compressImages: true },
-      html: { includeCss: true, inlineStyles: true },
-    },
-    custom_fields: {},
-  };
-
-  // Add a sample page
-  const samplePage = createPageFromTemplate(
-    "default",
-    "content",
-    "Chapter 1",
+  // Create cover page
+  const coverPage = createPageFromTemplate(
+    'standard-cover',
+    'cover',
+    'Book Title',
     [
-      {
-        type: "paragraph",
-        text: "This is your first page. Start writing your story here!",
-      },
+      { type: 'heading', text: 'Book Title', level: 1 },
+      { type: 'paragraph', text: 'Subtitle' },
+      { type: 'paragraph', text: 'Author Name' }
     ],
     userId
   );
 
-  defaultBook.pages = updatePageNumbers([samplePage]);
+  // Create title page
+  const titlePage = createPageFromTemplate(
+    'title-page',
+    'title',
+    'Title Page',
+    [
+      { type: 'heading', text: 'Book Title', level: 1 },
+      { type: 'paragraph', text: 'Author Name' }
+    ],
+    userId
+  );
+
+  // Create sample content page
+  const contentPage = createPageFromTemplate(
+    'chapter',
+    'chapter',
+    'Chapter 1',
+    [
+      { type: 'heading', text: 'Chapter 1', level: 1 },
+      { type: 'paragraph', text: 'This is your first chapter. Start writing your story here!' }
+    ],
+    userId
+  );
+
+  const defaultBook: BookData = {
+    id: bookId,
+    uuid: bookId,
+    title: 'New Book',
+    author_name: 'Author',
+    description: 'A new book created with the Book Builder',
+    pages: updatePageNumbers([coverPage, titlePage, contentPage]),
+    theme_id: 'default',
+    status: 'draft',
+    created_at: now,
+    updated_at: now,
+    version: '1.0.0',
+    metadata: {
+      title: 'New Book',
+      author: 'Author',
+      description: 'A new book created with the Book Builder',
+      language: 'en',
+      status: 'draft',
+      tags: [],
+      categories: [],
+      wordCount: 0,
+      pageCount: 3
+    },
+    settings: {
+      page_size: 'A4',
+      orientation: 'portrait',
+      show_page_numbers: true,
+      margin: {
+        top: '2cm',
+        right: '2cm',
+        bottom: '2cm',
+        left: '2cm'
+      },
+      header: {
+        enabled: false,
+        content: '',
+        height: '1cm'
+      },
+      footer: {
+        enabled: true,
+        content: 'Page {pageNumber}',
+        height: '1cm'
+      }
+    },
+    collaborators: [
+      {
+        id: userId,
+        role: 'owner',
+        name: 'Owner',
+        email: '',
+        joined_at: now
+      }
+    ],
+    permissions: {
+      can_edit: true,
+      can_export: true,
+      can_share: true,
+      can_delete: true
+    },
+    export_settings: {
+      format: 'pdf',
+      includeCover: true,
+      includeToc: true,
+      pageSize: 'A4',
+      margin: {
+        top: '2cm',
+        right: '2cm',
+        bottom: '2cm',
+        left: '2cm'
+      },
+      printOptions: {
+        bleed: '3mm',
+        cropMarks: true,
+        colorProfile: 'CMYK'
+      }
+    },
+    custom_fields: {}
+  };
 
   return defaultBook;
 }
 
-/**
- * Table of Contents
- */
-export interface TocEntry {
-  title: string;
-  pageNumber: number;
-  level: number;
+// Helper function to convert old format pages to new format
+export function migrateLegacyPage(oldPage: any): BookPage {
+  const now = new Date().toISOString();
+  const pageId = oldPage.id || uuidv4();
+  
+  return {
+    id: pageId,
+    uuid: pageId,
+    templateId: oldPage.templateId || 'default',
+    type: oldPage.type || 'content',
+    title: oldPage.title || 'Untitled',
+    subtitle: oldPage.subtitle,
+    content: {
+      blocks: Array.isArray(oldPage.content) 
+        ? oldPage.content.map((block: any) => ({
+            type: block.type || 'paragraph',
+            content: block.text || block.content || '',
+            level: block.level
+          }))
+        : [{ type: 'paragraph', content: oldPage.content || '' }],
+      version: 1,
+      lastModified: oldPage.updatedAt || now,
+      lastModifiedBy: oldPage.updatedBy || 'system'
+    },
+    layout: oldPage.layout || 'standard',
+    styles: {
+      fontFamily: oldPage.style?.fontFamily || 'Inter, sans-serif',
+      fontSize: oldPage.style?.fontSize ? `${oldPage.style.fontSize}px` : '16px',
+      lineHeight: oldPage.style?.lineHeight || 1.6,
+      textAlign: oldPage.style?.alignment || 'left',
+      textColor: oldPage.style?.textColor || '#000000',
+      backgroundColor: oldPage.style?.backgroundColor || '#ffffff',
+      margin: oldPage.style?.margins ? {
+        top: `${oldPage.style.margins.top}px`,
+        right: `${oldPage.style.margins.right}px`,
+        bottom: `${oldPage.style.margins.bottom}px`,
+        left: `${oldPage.style.margins.left}px`
+      } : {
+        top: '2cm',
+        right: '2cm',
+        bottom: '2cm',
+        left: '2cm'
+      }
+    },
+    metadata: {
+      created: oldPage.createdAt || now,
+      updated: oldPage.updatedAt || now,
+      createdBy: oldPage.createdBy || 'system',
+      updatedBy: oldPage.updatedBy || 'system',
+      status: oldPage.status || 'draft',
+      tags: [],
+      wordCount: oldPage.metadata?.wordCount || 0,
+      customMetadata: {
+        status: 'draft',
+        tags: [oldPage.type || 'content']
+      }
+    },
+    navigation: {
+      parentId: null,
+      firstChildId: null,
+      lastChildId: null,
+      previousSiblingId: null,
+      nextSiblingId: null,
+      previousPageId: null,
+      nextPageId: null,
+      depth: 0,
+      path: [],
+      position: {
+        absolute: oldPage.pageNumber || 1,
+        chapter: 1,
+        section: 1
+      },
+      isExpanded: false,
+      isVisibleInToc: true
+    },
+    isVisible: true,
+    isLocked: false,
+    version: 1,
+    pageNumber: oldPage.pageNumber || 1,
+    pageNumberStyle: {
+      position: 'footer',
+      alignment: 'center',
+      format: '1',
+      startAt: 1,
+      showInToc: true
+    },
+    customFields: {}
+  };
 }
 
-export const generateTableOfContents = (pages: BookPage[]): TocEntry[] =>
-  pages
-    .filter((p) => p.type === "content" && p.title)
-    .map((p) => ({
-      title: p.title,
-      pageNumber: p.metadata.pageNumber,
-      level: 1,
-    }));
-
-export const createTocPage = (entries: TocEntry[]): BookPage => {
+// Helper function to convert old format book to new format
+export function migrateLegacyBook(oldBook: any): BookData {
   const now = new Date().toISOString();
+  
   return {
-    id: `toc-${Date.now()}`,
-    uuid: uuidv4(),
-    templateId: "table-of-contents",
-    type: "toc",
-    title: "Table of Contents",
-    content: entries.map((entry) => ({
-      type: "toc-entry",
-      text: entry.title,
-      children: [
-        { type: "page-number", text: entry.pageNumber.toString() },
-      ],
-    })),
+    id: oldBook.id,
+    uuid: oldBook.uuid || oldBook.id,
+    title: oldBook.title || 'Untitled Book',
+    author_name: oldBook.author_name || 'Unknown Author',
+    description: oldBook.description,
+    pages: oldBook.pages?.map(migrateLegacyPage) || [],
+    theme_id: oldBook.theme_id,
+    status: oldBook.status || 'draft',
+    created_at: oldBook.created_at || now,
+    updated_at: oldBook.updated_at || now,
+    version: oldBook.version || '1.0.0',
     metadata: {
-      title: "Table of Contents",
-      description: "Generated automatically",
-      wordCount: entries.length,
-      pageNumber: 0,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "system",
-      updatedBy: "system",
+      title: oldBook.title || 'Untitled Book',
+      author: oldBook.author_name || 'Unknown Author',
+      description: oldBook.description || '',
+      language: oldBook.metadata?.language || 'en',
+      status: oldBook.status || 'draft',
+      tags: oldBook.metadata?.tags || [],
+      categories: oldBook.metadata?.categories || [],
+      wordCount: oldBook.metadata?.wordCount || 0,
+      pageCount: oldBook.pages?.length || 0
     },
-    style: {
-      fontSize: 12,
-      fontFamily: "Times New Roman",
-      lineHeight: 1.5,
-      alignment: "left",
-      margins: { top: 72, right: 72, bottom: 72, left: 72 },
-      backgroundColor: "#ffffff",
-      textColor: "#000000",
+    settings: {
+      page_size: oldBook.page_size || 'A4',
+      orientation: oldBook.orientation || 'portrait',
+      show_page_numbers: oldBook.show_page_numbers !== false,
+      margin: oldBook.settings?.margins ? {
+        top: `${oldBook.settings.margins.top}px`,
+        right: `${oldBook.settings.margins.right}px`,
+        bottom: `${oldBook.settings.margins.bottom}px`,
+        left: `${oldBook.settings.margins.left}px`
+      } : {
+        top: '2cm',
+        right: '2cm',
+        bottom: '2cm',
+        left: '2cm'
+      },
+      header: {
+        enabled: false,
+        content: '',
+        height: '1cm'
+      },
+      footer: {
+        enabled: true,
+        content: 'Page {pageNumber}',
+        height: '1cm'
+      }
     },
-    status: "draft",
-    createdAt: now,
-    updatedAt: now,
-    createdBy: "system",
-    updatedBy: "system",
+    collaborators: oldBook.collaborators || [],
+    permissions: oldBook.permissions || {
+      can_edit: true,
+      can_export: true,
+      can_share: true,
+      can_delete: true
+    },
+    export_settings: oldBook.export_settings || {
+      format: 'pdf',
+      includeCover: true,
+      includeToc: true,
+      pageSize: 'A4',
+      margin: {
+        top: '2cm',
+        right: '2cm',
+        bottom: '2cm',
+        left: '2cm'
+      }
+    },
+    custom_fields: oldBook.custom_fields || {}
   };
-};
-
-/**
- * Book manipulation
- */
-export const addPage = (
-  book: BookData,
-  page: BookPage,
-  position?: number
-): BookData => {
-  const pages = [...book.pages];
-  if (position === undefined || position < 0 || position > pages.length) {
-    pages.push(page);
-  } else {
-    pages.splice(position, 0, page);
-  }
-  return { ...book, pages: updatePageNumbers(pages) };
-};
-
-export const removePage = (book: BookData, pageId: string): BookData => {
-  const pages = book.pages.filter((p) => p.id !== pageId);
-  return { ...book, pages: updatePageNumbers(pages) };
-};
-
-export const movePage = (
-  book: BookData,
-  fromIndex: number,
-  toIndex: number
-): BookData => {
-  const pages = [...book.pages];
-  const [moved] = pages.splice(fromIndex, 1);
-  pages.splice(toIndex, 0, moved);
-  return { ...book, pages: updatePageNumbers(pages) };
-};
-
-/**
- * Metadata Export
- */
-export const generateBookMetadata = (book: BookData): string => {
-  const escapeXml = (str: string) =>
-    str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&apos;");
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<metadata>
-  <title>${escapeXml(book.metadata.title)}</title>
-  <author>${escapeXml(book.metadata.author)}</author>
-  <language>${book.metadata.language}</language>
-  <description>${escapeXml(book.metadata.description)}</description>
-  <status>${book.metadata.status}</status>
-  <wordCount>${book.metadata.wordCount}</wordCount>
-  <pageCount>${book.metadata.pageCount}</pageCount>
-  <tags>${book.metadata.tags
-    .map((tag) => `<tag>${escapeXml(tag)}</tag>`)
-    .join("")}</tags>
-  <categories>${book.metadata.categories
-    .map((cat) => `<category>${escapeXml(cat)}</category>`)
-    .join("")}</categories>
-</metadata>`;
-};
+}

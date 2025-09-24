@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 import { v4 as uuidv4 } from 'uuid';
 import { 
   Download, 
@@ -17,7 +17,6 @@ import {
   BookOpen,
   FileText,
   Image as ImageIcon,
-  Type,
   LayoutGrid,
   Bookmark,
   List,
@@ -56,7 +55,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -68,29 +67,24 @@ import { EnhancedBookPreview } from "@/components/book-builder/EnhancedBookPrevi
 // Import our types and utilities
 import { BookData, BookPage, BookTheme, PageType } from "@/types/book";
 import { PAGE_TEMPLATES, getTemplateById } from "@/lib/book-templates";
-import { createDefaultBook, createPageFromTemplate } from "@/lib/book-utils";
+import { createDefaultBook, createPageFromTemplate, migrateLegacyBook } from "@/lib/book-utils";
 
 // Define the type for our active section
 type ActiveSection = 'pages' | 'settings' | 'preview';
 
 export default function BookBuilderPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const previewRef = useRef<HTMLDivElement>(null);
   
   // State for the book builder
   const [user, setUser] = useState<any>(null);
   const [selectedStoryId, setSelectedStoryId] = useState<string>("");
   const [bookData, setBookData] = useState<BookData>(() => {
-    const defaultBook = createDefaultBook();
-    return {
-      ...defaultBook,
-      pages: defaultBook.pages.map((page, index) => ({
-        ...page,
-        id: `page-${Date.now()}-${index}`,
-        pageNumber: index + 1,
-      })),
-    };
+    return createDefaultBook('system');
   });
   
   // UI State
@@ -191,10 +185,15 @@ export default function BookBuilderPage() {
         
         // Create cover page
         const coverPage = createPageFromTemplate(
-          'cover',
+          'standard-cover',
           'cover',
           story.story_title || 'Untitled Story',
           [
+            {
+              type: 'heading',
+              text: story.story_title || 'Untitled Story',
+              level: 1
+            },
             {
               type: 'paragraph',
               text: story.subtitle || ''
@@ -207,10 +206,10 @@ export default function BookBuilderPage() {
           user?.id
         );
         
-        // Create content page (using 'content' type since it's one of the valid types)
+        // Create content page
         const contentPage = createPageFromTemplate(
-          'content',
-          'content',
+          'chapter',
+          'chapter',
           'Chapter 1',
           [
             {
@@ -228,8 +227,8 @@ export default function BookBuilderPage() {
         
         // Create end page
         const endPage = createPageFromTemplate(
-          'content',
-          'content',
+          'epilogue',
+          'epilogue',
           'The End',
           [
             {
@@ -302,7 +301,6 @@ export default function BookBuilderPage() {
           book_id: savedBook.id,
           page_number: index + 1,
           updated_at: now,
-          created_at: page.created_at || now,
         };
         
         // Remove any client-side only properties
@@ -427,24 +425,30 @@ export default function BookBuilderPage() {
   };
 
   // Handler for adding a new page
-  const handleAddPage = (type: PageType = 'content') => {
-    const newPage = createPageFromTemplate(type, bookData.pages.length + 1, {
-      customContent: {
-        title: type === 'chapter' ? `Chapter ${bookData.pages.filter(p => p.type === 'chapter').length + 1}` : 
-              type === 'toc' ? 'Table of Contents' :
-              type === 'cover' ? bookData.title :
-              `Page ${bookData.pages.length + 1}`,
-        content: type === 'toc' ? '' : 
-                type === 'cover' ? '' : 
-                `This is a new ${type} page. Start writing here...`,
-      },
-      customMetadata: {
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-        status: 'draft',
-        tags: [type, 'new']
+  const handleAddPage = (type: string) => {
+    const pageType = type as PageType;
+    const title = pageType === 'chapter' ? `Chapter ${bookData.pages.filter(p => p.type === 'chapter').length + 1}` : 
+                  pageType === 'toc' ? 'Table of Contents' :
+                  pageType === 'cover' ? bookData.title :
+                  `Page ${bookData.pages.length + 1}`;
+                  
+    const content = pageType === 'toc' ? [] : 
+                   pageType === 'cover' ? [] : 
+                   [{ type: 'paragraph', text: `This is a new ${pageType} page. Start writing here...` }];
+    
+    const newPage = createPageFromTemplate(
+      `${pageType}-template`,
+      pageType,
+      title,
+      content,
+      user?.id || 'system',
+      {
+        customMetadata: {
+          status: 'draft',
+          tags: [pageType, 'new']
+        }
       }
-    });
+    );
     
     setBookData(prev => ({
       ...prev,
@@ -513,10 +517,7 @@ export default function BookBuilderPage() {
   // Handler for updating a page
   const handlePageUpdate = (updatedPage: BookPage) => {
     const newPages = [...bookData.pages];
-    newPages[selectedPageIndex] = {
-      ...updatedPage,
-      updated_at: new Date().toISOString()
-    };
+    newPages[selectedPageIndex] = updatedPage;
     
     setBookData(prev => ({
       ...prev,
@@ -569,9 +570,9 @@ export default function BookBuilderPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="e">Create New Book</SelectItem>
-                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                  <SelectLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                     Your Stories
-                  </div>
+                  </SelectLabel>
                   {stories.length > 0 ? (
                     stories.map((story) => (
                       <SelectItem key={story.id} value={story.id}>
@@ -582,9 +583,11 @@ export default function BookBuilderPage() {
                       </SelectItem>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-muted-foreground">
-                      No stories found
-                    </div>
+                    <SelectItem value="no-stories" disabled>
+                      <span className="px-1 py-1 text-sm text-muted-foreground">
+                        No stories found
+                      </span>
+                    </SelectItem>
                   )}
                 </SelectContent>
               </Select>
@@ -648,7 +651,12 @@ export default function BookBuilderPage() {
         <EnhancedSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection as any}
-          pages={bookData.pages}
+          pages={bookData.pages.map(page => ({
+            id: page.id,
+            title: page.title,
+            type: page.type,
+            pageNumber: page.pageNumber || 1
+          }))}
           selectedPageIndex={selectedPageIndex}
           onPageSelect={setSelectedPageIndex}
           onAddPage={handleAddPage}
@@ -666,7 +674,15 @@ export default function BookBuilderPage() {
             )}>
               {currentPage && (
                 <EnhancedPageEditor
-                  page={currentPage}
+                  page={{
+                    id: currentPage.id,
+                    type: currentPage.type as any,
+                    title: currentPage.title,
+                    content: currentPage.content,
+                    pageNumber: currentPage.pageNumber || 1,
+                    layout: currentPage.layout,
+                    style: currentPage.styles
+                  }}
                   onPageChange={handlePageUpdate}
                   themes={themes}
                   className="h-full"
@@ -752,8 +768,10 @@ export default function BookBuilderPage() {
                     <div>
                       <Label>Page Size</Label>
                       <Select
-                        value={bookData.page_size || 'A4'}
-                        onValueChange={(value) => handleBookDataUpdate({ page_size: value })}
+                        value={bookData.settings?.page_size || 'A4'}
+                        onValueChange={(value) => handleBookDataUpdate({ 
+                          settings: { ...bookData.settings, page_size: value as any }
+                        })}
                       >
                         <SelectTrigger className="w-full mt-1">
                           <SelectValue />
@@ -771,8 +789,10 @@ export default function BookBuilderPage() {
                       <div>
                         <Label>Orientation</Label>
                         <Select
-                          value={bookData.orientation || 'portrait'}
-                          onValueChange={(value) => handleBookDataUpdate({ orientation: value })}
+                          value={bookData.settings?.orientation || 'portrait'}
+                          onValueChange={(value) => handleBookDataUpdate({ 
+                            settings: { ...bookData.settings, orientation: value as any }
+                          })}
                         >
                           <SelectTrigger className="w-full mt-1">
                             <SelectValue />
@@ -787,8 +807,10 @@ export default function BookBuilderPage() {
                       <div>
                         <Label>Page Numbers</Label>
                         <Select
-                          value={bookData.show_page_numbers ? 'show' : 'hide'}
-                          onValueChange={(value) => handleBookDataUpdate({ show_page_numbers: value === 'show' })}
+                          value={bookData.settings?.show_page_numbers ? 'show' : 'hide'}
+                          onValueChange={(value) => handleBookDataUpdate({ 
+                            settings: { ...bookData.settings, show_page_numbers: value === 'show' }
+                          }))
                         >
                           <SelectTrigger className="w-full mt-1">
                             <SelectValue />

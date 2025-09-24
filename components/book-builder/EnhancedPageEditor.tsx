@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from '@radix-ui/react-slider'
 import { cn } from "@/lib/utils";
+import { AdvancedTypographyControls } from "./AdvancedTypographyControls";
 
 type PageType = 'cover' | 'title' | 'copyright' | 'toc' | 'chapter' | 'content' | 'image' | 'default';
 
@@ -218,76 +219,11 @@ export function EnhancedPageEditor({
           </TabsContent>
 
           <TabsContent value="style" className="m-0">
-            <div className="space-y-4">
-              <div>
-                <Label>Font Family</Label>
-                <Select
-                  value={content.style?.fontFamily || 'Arial, sans-serif'}
-                  onValueChange={(value) => handleStyleChange('fontFamily', value)}
-                >
-                  <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select font" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Arial, sans-serif">Arial</SelectItem>
-                    <SelectItem value="Georgia, serif">Georgia</SelectItem>
-                    <SelectItem value="'Times New Roman', Times, serif">Times New Roman</SelectItem>
-                    <SelectItem value="'Courier New', Courier, monospace">Courier New</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center">
-                  <Label>Font Size: {content.style?.fontSize || '16px'}</Label>
-                  <span className="text-sm text-muted-foreground">
-                    {parseInt(content.style?.fontSize || '16')}px
-                  </span>
-                </div>
-                <Slider
-                  value={[parseInt(content.style?.fontSize || '16')]}
-                  onValueChange={([value]) => handleStyleChange('fontSize', `${value}px`)}
-                  min={8}
-                  max={72}
-                  step={1}
-                  className="mt-2"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center">
-                  <Label>Line Height: {content.style?.lineHeight || 1.5}</Label>
-                  <span className="text-sm text-muted-foreground">
-                    {content.style?.lineHeight || 1.5}
-                  </span>
-                </div>
-                <Slider
-                  value={[content.style?.lineHeight || 1.5]}
-                  onValueChange={([value]) => handleStyleChange('lineHeight', value)}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  className="mt-2"
-                />
-              </div>
-
-              <div>
-                <Label>Text Alignment</Label>
-                <div className="grid grid-cols-4 gap-2 mt-1">
-                  {['left', 'center', 'right', 'justify'].map((align) => (
-                    <Button
-                      key={align}
-                      variant={content.style?.textAlign === align ? 'default' : 'outline'}
-                      size="sm"
-                      className="capitalize"
-                      onClick={() => handleStyleChange('textAlign', align as any)}
-                    >
-                      {align}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <AdvancedTypographyControls
+              styles={content.style || {}}
+              onStyleChange={(styles) => handleContentChange({ style: styles })}
+              className="h-full"
+            />
           </TabsContent>
 
           <TabsContent value="layout" className="m-0">
