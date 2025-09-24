@@ -1,64 +1,122 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { BookBuilderSidebar } from "@/components/book-builder/BookBuilderSidebar";
-import { BookPreview } from "@/components/book-builder/BookPreview";
-import { BookSettingsPanel } from "@/components/book-builder/BookSettingsPanel";
-import { PageEditor } from "@/components/book-builder/PageEditor";
-import { Button } from "@/components/ui/button";
-import { Download, Save, Upload } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
+import { 
+  Download, 
+  Save, 
+  Plus, 
+  Trash2, 
+  Copy, 
+  ArrowUp, 
+  ArrowDown, 
+  GripVertical,
+  Settings,
+  BookOpen,
+  FileText,
+  Image as ImageIcon,
+  Type,
+  LayoutGrid,
+  Bookmark,
+  List,
+  FileArchive,
+  FileCheck,
+  FileCode,
+  FileX,
+  FileSearch,
+  FileSpreadsheet,
+  FileType2,
+  FileWarning,
+  FileQuestion,
+  FileJson,
+  FileOutput,
+  FileInput as FileInputIcon,
+  FileVideo,
+  FileImage,
+  FileUp,
+  FileDown,
+  FileTerminal,
+  FileType,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  LayoutDashboard,
+  Type as TypeIcon,
+  Palette,
+  BookOpenCheck,
+  BookText
+} from "lucide-react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-interface BookData {
-  id?: string;
-  title: string;
-  subtitle: string;
-  author_name: string;
-  isbn: string;
-  dimensions: string;
-  theme_id: string;
-  cover_theme_id: string;
-  pages: BookPage[];
-  metadata: any;
-}
+// Import our enhanced book components
+import { EnhancedSidebar } from "@/components/book-builder/EnhancedSidebar";
+import { EnhancedPageEditor } from "@/components/book-builder/EnhancedPageEditor";
+import { EnhancedBookPreview } from "@/components/book-builder/EnhancedBookPreview";
 
-interface BookPage {
-  id?: string;
-  page_number: number;
-  page_type: 'cover' | 'content' | 'end';
-  title: string;
-  content: string;
-  images: string[];
-  theme_override?: any;
-  layout: string;
-}
+// Import our types and utilities
+import { BookData, BookPage, BookTheme, PageType } from "@/types/book";
+import { PAGE_TEMPLATES, getTemplateById } from "@/lib/book-templates";
+import { createDefaultBook, createPageFromTemplate } from "@/lib/book-utils";
+
+// Define the type for our active section
+type ActiveSection = 'pages' | 'settings' | 'preview';
 
 export default function BookBuilderPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const previewRef = useRef<HTMLDivElement>(null);
   
-  const [user, setUser] = useState(null);
+  // State for the book builder
+  const [user, setUser] = useState<any>(null);
   const [selectedStoryId, setSelectedStoryId] = useState<string>("");
-  const [bookData, setBookData] = useState<BookData>({
-    title: "",
-    subtitle: "",
-    author_name: "",
-    isbn: "",
-    dimensions: "A4",
-    theme_id: "",
-    cover_theme_id: "",
-    pages: [],
-    metadata: {}
+  const [bookData, setBookData] = useState<BookData>(() => {
+    const defaultBook = createDefaultBook();
+    return {
+      ...defaultBook,
+      pages: defaultBook.pages.map((page, index) => ({
+        ...page,
+        id: `page-${Date.now()}-${index}`,
+        pageNumber: index + 1,
+      })),
+    };
   });
   
-  const [activeSection, setActiveSection] = useState<'settings' | 'pages' | 'preview'>('settings');
-  const [selectedPageIndex, setSelectedPageIndex] = useState(0);
-  const [themes, setThemes] = useState([]);
-  const [stories, setStories] = useState([]);
+  // UI State
+  const [activeSection, setActiveSection] = useState<ActiveSection>('pages');
+  const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
+  const [themes, setThemes] = useState<BookTheme[]>([]);
+  const [stories, setStories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  
+  // Preview settings
+  const [previewScale, setPreviewScale] = useState(0.8);
+  const [showGuides, setShowGuides] = useState(true);
+  const [showPageNumbers, setShowPageNumbers] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  // Get the current page
+  const currentPage = bookData.pages[selectedPageIndex] || bookData.pages[0];
+  
+  // Create a stable reference to the current page
+  const currentPageRef = useRef(currentPage);
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
 
   // Load user and initial data
   useEffect(() => {
@@ -117,6 +175,7 @@ export default function BookBuilderPage() {
     if (!storyId) return;
     
     try {
+      setIsLoading(true);
       const { data: story } = await supabase
         .from('stories')
         .select('*')
@@ -125,60 +184,111 @@ export default function BookBuilderPage() {
 
       if (story) {
         setSelectedStoryId(storyId);
-        setBookData(prev => ({
-          ...prev,
+        
+        // Create a new book with the story content
+        const newBook = createDefaultBook();
+        const now = new Date().toISOString();
+        
+        // Create cover page
+        const coverPage = createPageFromTemplate(
+          'cover',
+          'cover',
+          story.story_title || 'Untitled Story',
+          [
+            {
+              type: 'paragraph',
+              text: story.subtitle || ''
+            },
+            {
+              type: 'paragraph',
+              text: `By ${user?.user_metadata?.name || 'Author'}`
+            }
+          ],
+          user?.id
+        );
+        
+        // Create content page (using 'content' type since it's one of the valid types)
+        const contentPage = createPageFromTemplate(
+          'content',
+          'content',
+          'Chapter 1',
+          [
+            {
+              type: 'heading',
+              text: 'The Beginning',
+              level: 1
+            },
+            {
+              type: 'paragraph',
+              text: story.content || 'Start writing your story here...'
+            }
+          ],
+          user?.id
+        );
+        
+        // Create end page
+        const endPage = createPageFromTemplate(
+          'content',
+          'content',
+          'The End',
+          [
+            {
+              type: 'paragraph',
+              text: 'Thank you for reading!'
+            }
+          ],
+          user?.id
+        );
+        
+        // Update the book data
+        setBookData({
+          ...newBook,
           title: story.story_title,
           author_name: user?.user_metadata?.name || "Author",
-          pages: [
-            {
-              page_number: 1,
-              page_type: 'cover',
-              title: story.story_title,
-              content: '',
-              images: [],
-              layout: 'cover'
-            },
-            {
-              page_number: 2,
-              page_type: 'content',
-              title: 'Chapter 1',
-              content: story.content,
-              images: [],
-              layout: 'standard'
-            },
-            {
-              page_number: 3,
-              page_type: 'end',
-              title: 'The End',
-              content: 'Thank you for reading!',
-              images: [],
-              layout: 'end'
-            }
-          ]
-        }));
+          pages: [coverPage, contentPage, endPage],
+          updated_at: now
+        });
+        
+        toast.success('Story loaded successfully!');
       }
     } catch (error) {
       console.error('Error loading story:', error);
       toast.error('Failed to load story');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSaveBook = async () => {
-    if (!user || !selectedStoryId) return;
+    if (!user) {
+      toast.error('You must be logged in to save a book');
+      return;
+    }
     
     try {
       setIsSaving(true);
+      
+      // Prepare book data
+      const now = new Date().toISOString();
+      const bookToSave = {
+        ...bookData,
+        user_id: user.id,
+        status: 'draft',
+        total_pages: bookData.pages.length,
+        updated_at: now,
+        created_at: bookData.created_at || now,
+      };
+      
+      // Remove any client-side only properties before saving
+      delete (bookToSave as any).id;
       
       // Save book
       const { data: savedBook, error: bookError } = await supabase
         .from('books')
         .upsert({
-          ...bookData,
-          user_id: user.id,
-          story_id: selectedStoryId,
-          status: 'draft',
-          total_pages: bookData.pages.length,
-          updated_at: new Date().toISOString()
+          ...bookToSave,
+          ...(bookData.id && { id: bookData.id }), // Only include ID if it exists
+          story_id: selectedStoryId || null,
         })
         .select()
         .single();
@@ -186,23 +296,59 @@ export default function BookBuilderPage() {
       if (bookError) throw bookError;
 
       // Save pages
-      for (const page of bookData.pages) {
+      const pagePromises = bookData.pages.map(async (page, index) => {
+        const pageToSave = {
+          ...page,
+          book_id: savedBook.id,
+          page_number: index + 1,
+          updated_at: now,
+          created_at: page.created_at || now,
+        };
+        
+        // Remove any client-side only properties
+        delete (pageToSave as any).id;
+        
         const { error: pageError } = await supabase
           .from('book_pages')
           .upsert({
-            ...page,
-            book_id: savedBook.id,
-            updated_at: new Date().toISOString()
+            ...pageToSave,
+            ...(page.id && { id: page.id }), // Only include ID if it exists
           });
-        
+          
         if (pageError) throw pageError;
-      }
+      });
+      
+      await Promise.all(pagePromises);
+
+      // Update local state with saved data
+      setBookData(prev => ({
+        ...prev,
+        id: savedBook.id,
+        updated_at: now,
+        created_at: savedBook.created_at || now,
+      }));
 
       toast.success('Book saved successfully!');
+      
+      // Refresh the stories list to show the updated book
+      if (selectedStoryId) {
+        const { data: updatedStories } = await supabase
+          .from('stories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+          
+        if (updatedStories) {
+          setStories(updatedStories);
+        }
+      }
+      
+      return savedBook;
       
     } catch (error) {
       console.error('Error saving book:', error);
       toast.error('Failed to save book');
+      throw error;
     } finally {
       setIsSaving(false);
     }
@@ -215,141 +361,514 @@ export default function BookBuilderPage() {
     }
 
     try {
-      setIsLoading(true);
+      setIsExporting(true);
       
+      // First, save the book to ensure we have the latest version
+      const savedBook = await handleSaveBook();
+      
+      if (!savedBook) {
+        throw new Error('Failed to save book before export');
+      }
+      
+      // Show a loading toast with a progress indicator
+      const toastId = toast.loading('Preparing your book for export...');
+      
+      // Call the export API
       const response = await fetch('/api/v1/books/export-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
         body: JSON.stringify({
-          bookData,
-          storyId: selectedStoryId
+          bookId: savedBook.id,
+          format: 'pdf',
+          includeCover: true,
+          includeToc: true,
+          pageSize: 'A4',
+          margin: {
+            top: '2cm',
+            right: '2.5cm',
+            bottom: '2cm',
+            left: '2.5cm'
+          },
+          printOptions: {
+            bleed: '3mm',
+            cropMarks: true,
+            colorProfile: 'CMYK'
+          }
         })
       });
 
-      if (!response.ok) throw new Error('Export failed');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Export failed');
+      }
 
+      // Get the blob and create a download link
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${bookData.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      a.download = `${bookData.title.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      toast.success('Book exported successfully!');
+      toast.success('Book exported successfully!', { id: toastId });
       
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast.error('Failed to export PDF');
+      toast.error(error instanceof Error ? error.message : 'Failed to export PDF');
     } finally {
-      setIsLoading(false);
+      setIsExporting(false);
     }
   };
 
+  // Handler for adding a new page
+  const handleAddPage = (type: PageType = 'content') => {
+    const newPage = createPageFromTemplate(type, bookData.pages.length + 1, {
+      customContent: {
+        title: type === 'chapter' ? `Chapter ${bookData.pages.filter(p => p.type === 'chapter').length + 1}` : 
+              type === 'toc' ? 'Table of Contents' :
+              type === 'cover' ? bookData.title :
+              `Page ${bookData.pages.length + 1}`,
+        content: type === 'toc' ? '' : 
+                type === 'cover' ? '' : 
+                `This is a new ${type} page. Start writing here...`,
+      },
+      customMetadata: {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        status: 'draft',
+        tags: [type, 'new']
+      }
+    });
+    
+    setBookData(prev => ({
+      ...prev,
+      pages: [...prev.pages, newPage]
+    }));
+    
+    // Select the new page
+    setSelectedPageIndex(bookData.pages.length);
+    
+    // Scroll to the new page in the preview
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
+  };
+  
+  // Handler for deleting a page
+  const handleDeletePage = (index: number) => {
+    if (bookData.pages.length <= 1) {
+      toast.error('Cannot delete the last page');
+      return;
+    }
+    
+    const newPages = [...bookData.pages];
+    newPages.splice(index, 1);
+    
+    // Update page numbers
+    const updatedPages = newPages.map((page, i) => ({
+      ...page,
+      pageNumber: i + 1
+    }));
+    
+    setBookData(prev => ({
+      ...prev,
+      pages: updatedPages
+    }));
+    
+    // Adjust selected index if needed
+    if (selectedPageIndex >= index) {
+      setSelectedPageIndex(Math.max(0, selectedPageIndex - 1));
+    }
+    
+    toast.success('Page deleted');
+  };
+  
+  // Handler for reordering pages
+  const handlePageReorder = (oldIndex: number, newIndex: number) => {
+    const newPages = [...bookData.pages];
+    const [movedPage] = newPages.splice(oldIndex, 1);
+    newPages.splice(newIndex, 0, movedPage);
+    
+    // Update page numbers
+    const updatedPages = newPages.map((page, index) => ({
+      ...page,
+      pageNumber: index + 1
+    }));
+    
+    setBookData(prev => ({
+      ...prev,
+      pages: updatedPages
+    }));
+    
+    // Update selected index
+    setSelectedPageIndex(newIndex);
+  };
+  
+  // Handler for updating a page
+  const handlePageUpdate = (updatedPage: BookPage) => {
+    const newPages = [...bookData.pages];
+    newPages[selectedPageIndex] = {
+      ...updatedPage,
+      updated_at: new Date().toISOString()
+    };
+    
+    setBookData(prev => ({
+      ...prev,
+      pages: newPages,
+      updated_at: new Date().toISOString()
+    }));
+  };
+  
+  // Handler for updating the entire book data
+  const handleBookDataUpdate = (updates: Partial<BookData>) => {
+    setBookData(prev => ({
+      ...prev,
+      ...updates,
+      updated_at: new Date().toISOString()
+    }));
+  };
+
+  // Loading state
   if (isLoading && !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Book Builder...</p>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
+          <h2 className="text-2xl font-bold text-foreground">Loading Book Builder</h2>
+          <p className="text-muted-foreground">Preparing your workspace...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-background border-b border-border px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-gray-900">Book Builder</h1>
             <div className="flex items-center space-x-2">
-              <select
-                value={selectedStoryId}
-                onChange={(e) => handleStorySelect(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-md text-sm"
-              >
-                <option value="">Select a story...</option>
-                {stories.map((story: any) => (
-                  <option key={story.id} value={story.id}>
-                    {story.story_title}
-                  </option>
-                ))}
-              </select>
+              <BookOpenCheck className="h-6 w-6 text-primary" />
+              <h1 className="text-xl font-bold text-foreground">Book Builder</h1>
             </div>
+            
+            <div className="relative w-64">
+              <Select
+                value={selectedStoryId ||'null'}
+                onValueChange={handleStorySelect}
+                disabled={isLoading || isSaving}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a story..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="e">Create New Book</SelectItem>
+                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                    Your Stories
+                  </div>
+                  {stories.length > 0 ? (
+                    stories.map((story) => (
+                      <SelectItem key={story.id} value={story.id}>
+                        <div className="flex items-center space-x-2">
+                          <BookText className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{story.story_title}</span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-muted-foreground">
+                      No stories found
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {bookData.title && (
+              <div className="hidden md:flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">Editing:</span>
+                <span className="text-sm font-medium text-foreground truncate max-w-xs">
+                  {bookData.title}
+                </span>
+              </div>
+            )}
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
+              size="sm"
               onClick={handleSaveBook}
-              disabled={isSaving || !selectedStoryId}
+              disabled={isSaving || !bookData.title}
               className="flex items-center space-x-2"
             >
-              <Save className="w-4 h-4" />
-              <span>{isSaving ? 'Saving...' : 'Save'}</span>
+              <Save className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {isSaving ? 'Saving...' : 'Save'}
+              </span>
             </Button>
+            
             <Button
+              variant="default"
+              size="sm"
               onClick={handleExportPDF}
-              disabled={isLoading || !bookData.title}
+              disabled={isExporting || !bookData.title || bookData.pages.length === 0}
               className="flex items-center space-x-2"
             >
-              <Download className="w-4 h-4" />
-              <span>Export PDF</span>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {isExporting ? 'Exporting...' : 'Export'}
+              </span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="hidden md:flex"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
-        {/* Sidebar */}
-        <BookBuilderSidebar
+      <div className="flex-1 flex overflow-hidden">
+        {/* Enhanced Sidebar */}
+        <EnhancedSidebar
           activeSection={activeSection}
-          onSectionChange={setActiveSection}
+          onSectionChange={setActiveSection as any}
           pages={bookData.pages}
           selectedPageIndex={selectedPageIndex}
           onPageSelect={setSelectedPageIndex}
+          onAddPage={handleAddPage}
+          onDeletePage={handleDeletePage}
+          onPageReorder={handlePageReorder}
         />
 
-        {/* Main Content */}
-        <div className="flex-1 flex">
-          {/* Settings/Editor Panel */}
-          <div className="w-96 bg-white border-r border-gray-200 overflow-y-auto">
-            {activeSection === 'settings' && (
-              <BookSettingsPanel
-                bookData={bookData}
-                onBookDataChange={setBookData}
-                themes={themes}
-              />
-            )}
-            
-            {activeSection === 'pages' && (
-              <PageEditor
-                page={bookData.pages[selectedPageIndex]}
-                pageIndex={selectedPageIndex}
-                onPageChange={(updatedPage) => {
-                  const newPages = [...bookData.pages];
-                  newPages[selectedPageIndex] = updatedPage;
-                  setBookData(prev => ({ ...prev, pages: newPages }));
-                }}
-                themes={themes}
-              />
-            )}
-          </div>
-
-          {/* Preview */}
-          <div className="flex-1 bg-gray-100">
-            <BookPreview
-              bookData={bookData}
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+          {/* Editor Panel */}
+          {activeSection === 'pages' && (
+            <div className={cn(
+              "w-full md:w-96 lg:w-[28rem] border-r border-border bg-background overflow-y-auto",
+              isFullscreen && 'hidden md:block'
+            )}>
+              {currentPage && (
+                <EnhancedPageEditor
+                  page={currentPage}
+                  onPageChange={handlePageUpdate}
+                  themes={themes}
+                  className="h-full"
+                />
+              )}
+            </div>
+          )}
+          
+          {/* Settings Panel */}
+          {activeSection === 'settings' && (
+            <div className="w-full md:w-96 lg:w-[28rem] border-r border-border bg-background overflow-y-auto p-6">
+              <h2 className="text-xl font-bold mb-6 text-foreground">Book Settings</h2>
+              
+              <div className="space-y-6">
+                <div>
+                  <Label htmlFor="book-title">Book Title</Label>
+                  <Input
+                    id="book-title"
+                    value={bookData.title}
+                    onChange={(e) => handleBookDataUpdate({ title: e.target.value })}
+                    placeholder="Enter book title"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="book-author">Author Name</Label>
+                  <Input
+                    id="book-author"
+                    value={bookData.author_name}
+                    onChange={(e) => handleBookDataUpdate({ author_name: e.target.value })}
+                    placeholder="Enter author name"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label>Book Description</Label>
+                  <Textarea
+                    value={bookData.description || ''}
+                    onChange={(e) => handleBookDataUpdate({ description: e.target.value })}
+                    placeholder="Enter a short description of your book"
+                    className="mt-1 min-h-[100px]"
+                  />
+                </div>
+                
+                <div>
+                  <Label>Theme</Label>
+                  <Select
+                    value={bookData.theme_id || '24378'}
+                    onValueChange={(value) => handleBookDataUpdate({ theme_id: value })}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select a theme" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {themes && themes.length > 0 ? (
+                        themes.map((theme) => {
+                          const themeId = String(theme?.id || '').trim();
+                          const themeName = String(theme?.name || 'Untitled Theme').trim();
+                          return (
+                            <SelectItem 
+                              key={themeId || `theme-${Math.random().toString(36).substr(2, 9)}`} 
+                              value={themeId || 'default'}
+                            >
+                              {themeName}
+                            </SelectItem>
+                          );
+                        })
+                      ) : (
+                        <SelectItem value="no-themes" disabled>
+                          No themes available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="pt-4 border-t border-border">
+                  <h3 className="font-medium text-foreground mb-3">Export Settings</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Page Size</Label>
+                      <Select
+                        value={bookData.page_size || 'A4'}
+                        onValueChange={(value) => handleBookDataUpdate({ page_size: value })}
+                      >
+                        <SelectTrigger className="w-full mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A4">A4 (210 × 297 mm)</SelectItem>
+                          <SelectItem value="Letter">Letter (8.5 × 11 in)</SelectItem>
+                          <SelectItem value="A5">A5 (148 × 210 mm)</SelectItem>
+                          <SelectItem value="B5">B5 (176 × 250 mm)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Orientation</Label>
+                        <Select
+                          value={bookData.orientation || 'portrait'}
+                          onValueChange={(value) => handleBookDataUpdate({ orientation: value })}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="portrait">Portrait</SelectItem>
+                            <SelectItem value="landscape">Landscape</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label>Page Numbers</Label>
+                        <Select
+                          value={bookData.show_page_numbers ? 'show' : 'hide'}
+                          onValueChange={(value) => handleBookDataUpdate({ show_page_numbers: value === 'show' })}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="show">Show</SelectItem>
+                            <SelectItem value="hide">Hide</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={handleExportPDF}
+                        disabled={isExporting}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        {isExporting ? 'Exporting...' : 'Export Book'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Preview Panel */}
+          <div className={cn(
+            "flex-1 bg-muted/30 overflow-hidden",
+            activeSection === 'preview' ? 'block' : 'hidden md:block'
+          )}>
+            <EnhancedBookPreview
+              book={{
+                title: bookData.title || 'Untitled Book',
+                pages: bookData.pages,
+                theme_id: bookData.theme_id,
+                // Pass the full theme object if available
+                theme: themes.find(t => t.id === bookData.theme_id) || null
+              }}
               currentPageIndex={selectedPageIndex}
-              themes={themes}
+              onPageChange={setSelectedPageIndex}
+              scale={previewScale}
+              className="h-full"
             />
           </div>
         </div>
       </div>
+      
+      {/* Mobile bottom navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border flex justify-around items-center py-2 px-4 z-10">
+        <button
+          onClick={() => setActiveSection('pages')}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg ${activeSection === 'pages' ? 'text-primary' : 'text-muted-foreground'}`}
+        >
+          <TypeIcon className="h-5 w-5" />
+          <span className="text-xs mt-1">Edit</span>
+        </button>
+        
+        <button
+          onClick={() => setActiveSection('preview')}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg ${activeSection === 'preview' ? 'text-primary' : 'text-muted-foreground'}`}
+        >
+          <BookOpen className="h-5 w-5" />
+          <span className="text-xs mt-1">Preview</span>
+        </button>
+        
+        <button
+          onClick={() => setActiveSection('settings')}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg ${activeSection === 'settings' ? 'text-primary' : 'text-muted-foreground'}`}
+        >
+          <Settings className="h-5 w-5" />
+          <span className="text-xs mt-1">Settings</span>
+        </button>
+      </div>
+      
+      {/* Add some padding to account for the mobile navigation */}
+      <div className="h-16 md:hidden"></div>
     </div>
   );
 }
