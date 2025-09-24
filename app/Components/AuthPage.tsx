@@ -4,12 +4,15 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Lock, User, EyeOff, Eye } from "lucide-react";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 import { useToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 
 export default function AuthPage({ login }: { login?: boolean }) {
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const { notify } = useToast();
   const router = useRouter();
 

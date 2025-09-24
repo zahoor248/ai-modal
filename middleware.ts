@@ -1,17 +1,39 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll().map(cookie => ({
+            name: cookie.name,
+            value: cookie.value,
+          }));
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set({ name, value, ...options });
+            res.cookies.set({ name, value, ...options });
+          });
+        },
+      },
+    }
+  );
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
+  
   const { pathname } = req.nextUrl;
   const publicRoutes = ["/", "/login", "/register"];
+  
   if (!session) {
     if (!publicRoutes.includes(pathname)) {
       const url = req.nextUrl.clone();
@@ -20,20 +42,13 @@ export async function middleware(req: NextRequest) {
     }
     return res;
   } else if (session) {
-    const authPages: string[] | string | any = ["/login", "/register"];
+    const authPages: string[] = ["/login", "/register"];
     if (authPages.includes(pathname)) {
-      console.log("Auth Pages:", authPages);
       const url = req.nextUrl.clone();
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
     return res;
-  }
-
-  if (pathname === "/login" || pathname === "/register") {
-    const url = req.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
   }
 
   return res;
