@@ -221,8 +221,8 @@ export default function HomePage() {
             <a href="#features" className="text-foreground/80 hover:text-primary transition-colors duration-200">
               Features
             </a>
-            <a href="#how-it-works" className="text-foreground/80 hover:text-primary transition-colors duration-200">
-              How it Works
+            <a href="#builders" className="text-foreground/80 hover:text-primary transition-colors duration-200">
+              Builders
             </a>
             <a href="#pricing" className="text-foreground/80 hover:text-primary transition-colors duration-200">
               Pricing

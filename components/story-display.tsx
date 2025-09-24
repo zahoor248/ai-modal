@@ -31,7 +31,7 @@ import {
 import { StoryEditor } from "@/components/story-editor";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useTypewriter } from "./TyprWriterEffect";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 import { PDFBuilder } from "./ui/pdf-builder";
 
 interface Story {
@@ -53,7 +53,10 @@ export function StoryDisplay({
   onReset,
   isGenerating,
 }: StoryDisplayProps) {
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
@@ -393,6 +396,28 @@ export function StoryDisplay({
                         Listen
                       </>
                     )}
+                  </Button>
+
+                  {/* Book Builder Button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(`/book-builder?story=${currentStory.id}`, '_blank')}
+                    className="flex items-center gap-2 bg-transparent hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-300 hover:scale-105 relative overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+                    <FileText className="w-4 h-4" />
+                    Create Book
+                  </Button>
+
+                  {/* Social Media Builder Button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(`/social-builder?story=${currentStory.id}`, '_blank')}
+                    className="flex items-center gap-2 bg-transparent hover:bg-green-500/10 hover:text-green-600 transition-all duration-300 hover:scale-105 relative overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+                    <Globe className="w-4 h-4" />
+                    Social Media
                   </Button>
 
                   {/* Edit Button */}

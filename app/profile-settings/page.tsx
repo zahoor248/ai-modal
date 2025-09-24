@@ -271,8 +271,9 @@ export default function ProfileSettingsPage() {
       {/* Main Content */}
       <main className="container mx-auto py-6 max-w-4xl">
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="characters">Characters</TabsTrigger>
             <TabsTrigger value="social">Social Media</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
@@ -334,6 +335,125 @@ export default function ProfileSettingsPage() {
                 <Button onClick={handleSaveProfile} disabled={isSaving}>
                   {isSaving ? 'Saving...' : 'Save Profile'}
                 </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Characters Tab */}
+          <TabsContent value="characters">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <User className="w-5 h-5" />
+                  <span>My Characters</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Create and manage characters to use in your stories
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Character Creation */}
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Plus className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">Create New Character</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Add a new character with custom details and image
+                  </p>
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Character
+                  </Button>
+                </div>
+
+                {/* Character List */}
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Your Characters</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Sample Pre-created Characters */}
+                    <div className="border rounded-lg p-4 bg-card">
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl">
+                        A
+                      </div>
+                      <h4 className="font-medium text-center mb-2">Alex the Adventurer</h4>
+                      <p className="text-xs text-muted-foreground text-center mb-3">
+                        Brave explorer who loves discovering new places
+                      </p>
+                      <div className="flex justify-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Edit3 className="w-3 h-3" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-destructive">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="border rounded-lg p-4 bg-card">
+                      <div className="w-16 h-16 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl">
+                        M
+                      </div>
+                      <h4 className="font-medium text-center mb-2">Maya the Magician</h4>
+                      <p className="text-xs text-muted-foreground text-center mb-3">
+                        Wise wizard with powerful magical abilities
+                      </p>
+                      <div className="flex justify-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Edit3 className="w-3 h-3" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-destructive">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="border rounded-lg p-4 bg-card">
+                      <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl">
+                        R
+                      </div>
+                      <h4 className="font-medium text-center mb-2">Rex the Robot</h4>
+                      <p className="text-xs text-muted-foreground text-center mb-3">
+                        Friendly robot companion for sci-fi adventures
+                      </p>
+                      <div className="flex justify-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Edit3 className="w-3 h-3" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-destructive">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Character Import Options */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="text-lg font-medium mb-3">Character Import</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Upload Character Image</Label>
+                        <p className="text-sm text-muted-foreground">Upload custom character portraits</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Upload Image
+                      </Button>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Use Pre-created Characters</Label>
+                        <p className="text-sm text-muted-foreground">Choose from our character library</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Browse Library
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

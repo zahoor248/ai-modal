@@ -810,7 +810,7 @@ export default function BookBuilderPage() {
                           value={bookData.settings?.show_page_numbers ? 'show' : 'hide'}
                           onValueChange={(value) => handleBookDataUpdate({ 
                             settings: { ...bookData.settings, show_page_numbers: value === 'show' }
-                          }))
+                          })}
                         >
                           <SelectTrigger className="w-full mt-1">
                             <SelectValue />

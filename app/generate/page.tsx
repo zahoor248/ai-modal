@@ -26,9 +26,10 @@ import Link from "next/link";
 import { StoryDisplay } from "@/components/story-display";
 import { EnhancedTemplateSelector } from "@/components/enhanced-template-selector";
 import { StoryPromptBuilder } from "@/components/story-prompt-builder";
+import { QuickStoryBuilder } from "@/components/quick-story-builder";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { buildFullPrompt } from "@/lib/ai-prompts";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 
 // Helper function to generate title based on template and prompt
 const generateTitle = (
@@ -69,7 +70,13 @@ const generationSteps = [
 ];
 
 export default function EnhancedGeneratePage() {
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  
+  // Builder mode selection
+  const [builderMode, setBuilderMode] = useState<'selection' | 'wizard' | 'quick'>('selection');
   const [currentStep, setCurrentStep] = useState(1);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState("");
@@ -101,6 +108,69 @@ export default function EnhancedGeneratePage() {
     setPromptData(data);
     setRefinedPrompt(prompt);
     setCurrentStep(3);
+  };
+
+  const handleQuickGenerate = async (quickData: any) => {
+    setIsGenerating(true);
+    setGeneratedStory({
+      content: "",
+      title: "",
+      template: quickData.genre,
+      createdAt: new Date().toISOString(),
+    });
+
+    try {
+      const quickPrompt = `Create a ${quickData.genre} story about: ${quickData.idea}${quickData.character ? ` featuring ${quickData.character}` : ''}. Make it engaging and fun to read.`;
+      
+      const resp = await fetch("/api/v1/story/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: quickPrompt }),
+      });
+
+      if (!resp.ok) throw new Error("Failed to generate story");
+
+      const reader = resp.body?.getReader();
+      const decoder = new TextDecoder();
+      let content = "";
+      let title = "";
+
+      while (reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.content) content += data.content;
+              if (data.title && !title) title = data.title;
+              
+              setGeneratedStory((prev: any) => ({
+                ...prev,
+                content,
+                title: title || generateTitle({ category: quickData.genre, type: quickData.genre }, quickData.idea),
+              }));
+            } catch (e) {
+              console.warn("Failed to parse SSE data:", e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error generating story:", error);
+      setGeneratedStory({
+        content: "Once upon a time, there was an amazing story waiting to be told...",
+        title: "Sample Story",
+        template: quickData.genre,
+        createdAt: new Date().toISOString(),
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleGenerate = async () => {
