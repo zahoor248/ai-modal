@@ -357,13 +357,13 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium mb-6">
-              💝 Loved by Creators
+              📱 Loved by Creators
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Stories That Touch Hearts
+              Content That Goes Viral
             </h2>
             <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-              Join thousands of storytellers who've transformed their ideas into compelling narratives.
+              Join thousands of creators who've transformed their ideas into viral social media content.
             </p>
           </div>
 
@@ -378,13 +378,13 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-foreground/80 mb-4 italic">
-                "StoryBuds helped me create the perfect bedtime stories for my children. The AI understands exactly what I want to convey."
+                "StoryBuds helped me create viral Instagram posts that boosted my engagement by 300%. The AI understands exactly what my audience wants."
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-purple-500" />
                 <div>
                   <div className="font-semibold text-sm">Sarah Chen</div>
-                  <div className="text-xs text-foreground/60">Parent & Teacher</div>
+                  <div className="text-xs text-foreground/60">Lifestyle Influencer</div>
                 </div>
               </div>
             </div>
@@ -399,13 +399,13 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-foreground/80 mb-4 italic">
-                "As an indie author, this platform has revolutionized my writing process. I can create compelling stories in minutes."
+                "As a content creator, this platform has revolutionized my posting process. I can create compelling content for all platforms in minutes."
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500" />
                 <div>
                   <div className="font-semibold text-sm">Marcus Rivera</div>
-                  <div className="text-xs text-foreground/60">Author</div>
+                  <div className="text-xs text-foreground/60">Digital Marketer</div>
                 </div>
               </div>
             </div>
@@ -420,13 +420,13 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-foreground/80 mb-4 italic">
-                "The audio features are incredible! My students love listening to the stories we create together in class."
+                "The scheduling features are incredible! My clients love how consistently I can post across all their social platforms."
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" />
                 <div>
                   <div className="font-semibold text-sm">Emily Johnson</div>
-                  <div className="text-xs text-foreground/60">Elementary Teacher</div>
+                  <div className="text-xs text-foreground/60">Social Media Manager</div>
                 </div>
               </div>
             </div>
