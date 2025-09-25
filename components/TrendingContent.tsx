@@ -168,26 +168,26 @@ export default function TrendingContent({ platform, className = "" }: TrendingCo
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right flex-shrink-0">
-                  {trend.metrics.volume && (
+                  {trend.metrics?.volume && (
                     <span className="text-sm font-medium">{formatMetric(trend.metrics.volume)}</span>
                   )}
-                  {trend.metrics.uses && (
+                  {trend.metrics?.uses && (
                     <span className="text-sm font-medium">{formatMetric(trend.metrics.uses)} uses</span>
                   )}
-                  {trend.metrics.participants && (
+                  {trend.metrics?.participants && (
                     <span className="text-sm font-medium">{formatMetric(trend.metrics.participants)} people</span>
                   )}
-                  {trend.metrics.posts && (
+                  {trend.metrics?.posts && (
                     <span className="text-sm font-medium">{formatMetric(trend.metrics.posts)} posts</span>
                   )}
-                  {trend.metrics.growth && (
+                  {trend.metrics?.growth && (
                     <span className={`text-xs font-medium ${
                       trend.metrics.growth.startsWith('+') ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {trend.metrics.growth}
                     </span>
                   )}
-                  {trend.metrics.engagement_rate && (
+                  {trend.metrics?.engagement_rate && (
                     <span className="text-xs text-foreground/60">{trend.metrics.engagement_rate} engagement</span>
                   )}
                 </div>
