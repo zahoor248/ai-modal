@@ -1,0 +1,179 @@
+Overview:
+
+We are developing an AI-powered Social Media Content Builder and Individual Content Builder that generates stories, captions, and other social media content through AI. The system needs to be fully functional, with social media integrations, a smooth user experience (UX), and support for various content types (images, text, hashtags, etc.). The MVP should address any current integration issues, API connections, and incomplete functionalities.
+
+1. General Requirements:
+
+Full integration of social media APIs (e.g., Facebook, Instagram, Twitter, LinkedIn).
+
+AI-generated story and content creation.
+
+User-friendly UX design.
+
+Dynamic content creation based on user inputs (keywords, topics, industry).
+
+Functional MVP with dummy placeholders replaced by live connections.
+
+Support for multi-platform publishing.
+
+2. API Integration (Social Media Platforms):
+
+Objective: Replace dummy social media API connections with real, functional ones for Facebook, Instagram, Twitter, LinkedIn, etc.
+
+Actions:
+
+Integrate Facebook Graph API for creating posts, uploading images, scheduling, etc.
+
+Integrate Instagram Graph API for posts, stories, and media uploads.
+
+Implement Twitter API for tweet generation and scheduling.
+
+Implement LinkedIn API for post creation and professional networking content.
+
+Ensure OAuth authentication and permissions for each platform.
+
+Test integration to ensure that content is successfully pushed to each platform with correct formatting (text, images, links, etc.).
+
+3. Story and Content Generation:
+
+Objective: Use AI to generate creative, engaging stories, captions, and hashtags based on input data (keywords, industry, etc.).
+
+Actions:
+
+Integrate GPT-4 or similar model to generate content based on prompts such as:
+
+Product descriptions
+
+Blog summaries
+
+Marketing campaigns
+
+Social media posts (captions, hashtags, images)
+
+Provide users with content templates for different types of posts (e.g., promotional, inspirational, product-focused).
+
+Allow users to specify tone (e.g., casual, professional, fun, etc.).
+
+Ensure content is optimized for different social media platforms (i.e., Instagram’s character limits, Twitter’s image handling, etc.).
+
+Implement an AI proofreading and editing feature to refine generated content.
+
+Include the ability to generate hashtag suggestions based on topic and trending data.
+
+4. UX/UI Design:
+
+Objective: Design an intuitive and seamless user experience for the AI-powered builder and social media integration.
+
+Actions:
+
+Dashboard: Build a clean, easy-to-use dashboard where users can input data (keywords, themes, etc.) and view AI-generated content.
+
+Drag-and-Drop Interface: Allow users to drag content components (images, captions, etc.) into their posts.
+
+Preview Mode: Provide a preview of posts and content before publishing.
+
+Responsive Design: Ensure the app works well across all devices (desktop, tablet, mobile).
+
+Content Categories: Add content type options like blogs, product posts, influencer collaborations, stories, etc.
+
+Templates: Provide pre-designed content templates for users to select from.
+
+Analytics and Performance: Integrate analytics to show content performance (engagement, reach, etc.).
+
+Feedback System: Incorporate a system to gather user feedback on generated content for further AI model improvement.
+
+5. Content Scheduling & Automation:
+
+Objective: Automate social media posting by scheduling posts based on user preference and time zone.
+
+Actions:
+
+Enable content scheduling with the ability to select the time and date for post publishing.
+
+Implement a queue system where users can add multiple pieces of content and schedule them sequentially.
+
+Integrate a calendar feature to manage scheduled posts.
+
+Implement a time zone feature to adjust posting schedules according to the user’s time zone.
+
+6. Real-time Updates and Fixes:
+
+Objective: Address the existing issues in the builder, ensuring no areas are left unintegrated.
+
+Actions:
+
+Bug Fixing: Identify and resolve existing bugs, especially in API connections and content generation.
+
+Live Integration Testing: Perform tests on all integrated platforms to ensure the data flow works correctly (content being created and posted as expected).
+
+UI Adjustments: Fix any visual or interaction bugs in the dashboard, post creation screens, and publishing tools.
+
+Ensure real-time syncing between the content builder and connected social media accounts.
+
+7. Data Privacy and Security:
+
+Objective: Ensure compliance with data privacy laws and secure handling of user data.
+
+Actions:
+
+Implement GDPR compliance for users in relevant regions.
+
+Integrate data encryption to ensure secure data transmission.
+
+Allow users to manage their data with options to delete or export their content.
+
+8. User Engagement and Support:
+
+Objective: Ensure users have an enjoyable and supportive experience using the builder.
+
+Actions:
+
+Implement a chatbot or live support feature for troubleshooting and user assistance.
+
+Provide tutorials and a help center for users unfamiliar with the builder.
+
+Offer an onboarding process for new users to quickly understand how to use the platform.
+
+9. Reporting and Analytics (Post-Publish Metrics):
+
+Objective: Track the success of posts on each social platform to measure engagement.
+
+Actions:
+
+Integrate analytics tools for each social media platform to report on:
+
+Likes, shares, comments, etc.
+
+Click-through rates (CTR) on links.
+
+Impressions and reach.
+
+Provide users with content performance reports and actionable insights (e.g., optimal post times, hashtags that work well, etc.).
+
+10. Testing & Final Adjustments:
+
+Objective: Ensure everything is fully tested, functional, and ready for deployment.
+
+Actions:
+
+Beta Testing: Conduct internal and external testing to identify bugs and user feedback.
+
+Performance Testing: Ensure that the app performs well even under heavy usage.
+
+Conduct UI/UX testing with real users to refine the experience.
+
+Implement feedback and make final adjustments before the official launch.
+
+Specific Tasks for the AI Agent to Complete:
+
+Replace dummy API connections with real, functional APIs for social media platforms (Facebook, Instagram, Twitter, LinkedIn).
+
+Integrate GPT-4 (or similar) AI for story and content generation with customization options.
+
+Design and develop a user-friendly UX with a clean, intuitive interface.
+
+Implement content scheduling, posting automation, and performance tracking.
+
+Ensure robust error handling and bug fixing for existing issues in the content builder.
+
+Implement data privacy features (e.g., GDPR compliance) and secure user data handling.
