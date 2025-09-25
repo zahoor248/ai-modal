@@ -1,0 +1,151 @@
+Prompt for Social Media Content Builder with Trend Integration for TikTok, YouTube, and Other Platforms
+1. Overview:
+
+You need a Social Media Content Builder with separate modules for TikTok, YouTube, and other social media platforms that automatically pulls in trending topics, hashtags, challenges, and video formats specific to each platform. This builder should allow users to create highly relevant, trend-based content that fits the specific requirements of each platform, all while providing recommendations based on real-time social media data.
+
+The builder should:
+
+Pull live trends from TikTok, YouTube, Twitter, Instagram, etc.
+
+Allow users to create content around these trends (videos, captions, and posts).
+
+Provide recommendations for hashtags, titles, thumbnails, etc.
+
+Ensure the generated content adheres to platform-specific guidelines (length, dimensions, tone).
+
+2. TikTok Content Builder:
+2.1. Trend Integration:
+
+Trending Hashtags: Fetch trending TikTok hashtags in real-time. This should include popular challenges, viral topics, and emerging trends (e.g., #FYP, #Viral, #TikTokMadeMeBuyIt).
+
+Trending Sounds/Music: Display trending songs or sound clips that users can incorporate into their TikTok videos. Integrate this with TikTok’s official music library API (if accessible).
+
+Popular Formats/Challenges: Suggest viral video formats or challenges currently trending on TikTok. This could include dance challenges, lip-syncs, and specific video types like tutorials or reviews.
+
+Top Creators/Influencers: List influencers who are leading the current trends, allowing users to look at their content for inspiration.
+
+2.2. Content Creation:
+
+Video Lengths: Provide guidelines for the maximum video length on TikTok (up to 10 minutes) with a recommendation for shorter, more engaging formats.
+
+Aspect Ratios & Dimensions: Ensure users can create videos with the right dimensions (9:16 aspect ratio for vertical video).
+
+Hashtag Suggestions: Based on the user's input or selected trend, the AI should generate a list of optimized hashtags. For example, if the user is creating a video about a specific challenge, relevant hashtags should be suggested.
+
+Video Editing Tools: Offer basic video editing features (trimming, adding text overlays, special effects, transitions, etc.) to customize the content.
+
+Trend-driven Titles & Descriptions: Suggest titles and captions based on the chosen trend, optimized for TikTok's algorithm.
+
+2.3. TikTok Publishing:
+
+Schedule Posts: Allow users to schedule TikTok posts based on trending time slots. The system can recommend optimal posting times based on TikTok user engagement patterns.
+
+Preview Feature: Provide a real-time preview of the video to show how it would appear on TikTok’s feed, with thumbnail, caption, and hashtags.
+
+3. YouTube Content Builder:
+3.1. Trend Integration:
+
+Trending Video Topics: Fetch real-time trending topics and categories based on YouTube’s trending page or the YouTube API. This could include categories like gaming, music, fashion, tech, and viral challenges.
+
+Popular Keywords: Show trending keywords and search queries on YouTube related to the user’s interests or industry. This will help in generating video titles that align with what people are actively searching for.
+
+Viral Challenges and Trends: Integrate viral challenges or meme formats that are currently gaining traction on YouTube. These might be challenges specific to creators, specific video styles (e.g., reaction videos), or community-driven trends.
+
+Top Creators: Show a list of popular creators or YouTubers whose videos are trending in the same niche as the user’s intended content.
+
+3.2. Content Creation:
+
+Video Length: Provide suggestions based on YouTube’s best practices for video lengths (e.g., for optimal engagement, videos should ideally be between 7-15 minutes, but shorter content can also work).
+
+Video Format: Allow users to choose video formats (e.g., vlog-style, tutorial, reaction, product review).
+
+Thumbnails and Titles: Automatically suggest thumbnail styles and titles optimized for YouTube’s algorithm. Thumbnails can be created using simple templates or even AI-powered tools to help with image selection.
+
+SEO Optimized Descriptions: Use AI to generate SEO-optimized descriptions based on trending topics and keywords. Include suggestions for tags and additional metadata to increase discoverability.
+
+Call to Action (CTA): Automatically suggest CTA phrases for engaging the audience (e.g., “Like, comment, and subscribe” or “Check out the link in the description”).
+
+3.3. YouTube Publishing:
+
+Content Calendar Integration: Sync with a calendar that allows users to plan video uploads based on YouTube trends.
+
+Video Optimization: Provide post-production tips, such as improving watch time, increasing engagement, and ensuring high-quality video settings (1080p or 4K).
+
+Automated Upload: Allow users to upload videos directly to YouTube from the content builder (if API access is available), including adding titles, descriptions, and thumbnails.
+
+Preview Video: Provide a preview mode that simulates how the video will look once uploaded to YouTube (video layout, suggested thumbnails, title, etc.).
+
+4. Instagram Content Builder:
+4.1. Trend Integration:
+
+Trending Hashtags: Pull live trending Instagram hashtags and categories (e.g., #InstaGood, #PhotoOfTheDay, #ThrowbackThursday).
+
+Popular Instagram Reels Trends: Identify popular Instagram Reels trends, such as meme trends, dance challenges, or viral audio clips.
+
+Trending Filters and Effects: Show the most popular filters and effects currently being used in Instagram Stories and Reels.
+
+4.2. Content Creation:
+
+Reels Format: Allow users to create short-form videos (Reels) with the appropriate aspect ratio (9:16) and length (up to 90 seconds).
+
+Instagram Feed Format: Provide guidelines for creating square or portrait images for regular posts.
+
+Stories Format: Enable users to create Instagram Stories with customizable templates and effects.
+
+Caption and Hashtag Recommendations: Suggest captions based on trending topics or user-selected hashtags.
+
+4.3. Instagram Publishing:
+
+Instagram Post Scheduler: Allow users to schedule posts for optimal engagement times on Instagram.
+
+Automatic Publishing: Enable auto-posting directly to Instagram for both feed and stories.
+
+Instagram Insights: Provide basic analytics like engagement, reach, and interactions with posts.
+
+5. Twitter Content Builder:
+5.1. Trend Integration:
+
+Trending Topics and Hashtags: Pull live data from Twitter's trending topics and hashtags in real-time.
+
+Trending Tweets: Show popular tweets that users can reference or engage with to create viral content.
+
+Popular Twitter Polls: Highlight popular or emerging polls on Twitter, encouraging users to create their own interactive content.
+
+5.2. Content Creation:
+
+Tweet Generation: Automatically generate tweet ideas based on trending topics, user preferences, or past successful content.
+
+Thread Creation: Suggest creating Twitter threads based on popular tweet chains, optimized for engagement and discussion.
+
+Hashtag Suggestions: Offer optimized hashtags based on the latest trends.
+
+5.3. Twitter Publishing:
+
+Scheduling Tweets: Allow users to schedule tweets at optimal times to maximize engagement.
+
+Auto-Publish: Enable auto-publishing of tweets and threads.
+
+6. Additional Platforms (LinkedIn, Facebook, Pinterest, etc.):
+6.1. LinkedIn Content Builder:
+
+Trending Industry Topics: Pull trending industry-specific content and articles to help users create thought-leadership posts.
+
+LinkedIn Article Creation: Enable long-form content creation for LinkedIn articles, including SEO-optimized titles and descriptions.
+
+6.2. Pinterest Content Builder:
+
+Trending Pins and Boards: Display trending Pinterest boards and pins to inspire content ideas.
+
+Pin Creation Tools: Suggest the best image sizes, descriptions, and keywords for Pinterest pins.
+
+7. Integration and Cross-Platform Publishing:
+
+Cross-Platform Scheduling: Allow users to schedule content across multiple platforms at once (e.g., schedule TikTok video, YouTube upload, and Instagram post simultaneously).
+
+Unified Analytics Dashboard: Show post-performance across all connected platforms, displaying engagement metrics, impressions, and reach.
+
+Content Repurposing: Suggest ways to repurpose content across platforms (e.g., turning a TikTok video into a YouTube Short, or a tweet into a Pinterest pin).
+
+Final Notes:
+
+This social media content builder should be intuitive, personalized, and constantly updated to stay on top of trends. By incorporating real-time trend data, providing platform-specific recommendations, and offering powerful publishing tools, users can create viral, relevant content tailored to each social media platform.
