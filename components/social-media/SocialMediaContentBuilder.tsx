@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import AIContentGenerator from "@/components/AIContentGenerator";
 
 // Platform configurations
 const PLATFORMS = {
@@ -357,13 +358,13 @@ export function SocialMediaContentBuilder({
             </CardContent>
           </Card>
 
-          {/* Caption Editor */}
+          {/* Caption Editor with AI Integration */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Type className="w-5 h-5" />
-                  <span>Caption</span>
+                  <span>Caption & AI Generator</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {getCharacterCount()}/{getMaxLength()}
@@ -371,18 +372,38 @@ export function SocialMediaContentBuilder({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Write your caption here..."
-                className="min-h-[150px] resize-none"
-                maxLength={getMaxLength()}
-              />
-              {getCharacterCount() > getMaxLength() && (
-                <p className="text-sm text-destructive mt-2">
-                  Caption exceeds maximum length for selected platforms
-                </p>
-              )}
+              <Tabs defaultValue="manual" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                  <TabsTrigger value="ai">🤖 AI Generator</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="manual" className="space-y-4">
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    placeholder="Write your caption here..."
+                    className="min-h-[150px] resize-none"
+                    maxLength={getMaxLength()}
+                  />
+                  {getCharacterCount() > getMaxLength() && (
+                    <p className="text-sm text-destructive mt-2">
+                      Caption exceeds maximum length for selected platforms
+                    </p>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="ai">
+                  <AIContentGenerator
+                    onContentGenerated={(content) => setCaption(content)}
+                    onHashtagsGenerated={(tags) => setHashtags(tags)}
+                    platform={selectedPlatforms[0] || 'instagram'}
+                    contentType="caption"
+                    placeholder={`Create engaging content for ${selectedPlatforms.map(p => PLATFORMS[p as keyof typeof PLATFORMS]?.name || p).join(', ')}...`}
+                    maxLength={getMaxLength()}
+                  />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
 

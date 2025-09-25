@@ -1,0 +1,272 @@
+Visual & Pixel-Perfect Design:
+
+Compare design implementation vs. Figma (or design spec) — every pixel, padding, and spacing must match
+
+Confirm:
+
+Header: logo size, nav spacing, alignment
+
+Hero: heading size, button hover states, responsiveness
+
+Font sizes and colors match the design system
+
+Button shadow, border-radius, and hover effects match modern design trends
+
+All icons are crisp (no pixelation or blurry rendering)
+
+✅ Responsive Design:
+
+Test homepage on:
+
+Desktop (1440px, 1920px)
+
+Tablet (768px, 1024px)
+
+Mobile (375px, 414px)
+
+Ensure content reflows correctly, navigation collapses into hamburger, CTA buttons are tappable
+
+✅ UX Standards Check:
+
+Navigation:
+
+Every nav link scrolls/smooth-scrolls to correct section or route
+
+Hamburger menu animation and close icon function smoothly
+
+Scroll Behavior:
+
+Scroll-jacking disabled
+
+Parallax, if present, is smooth (not choppy or jittery)
+
+CTA Buttons:
+
+CTAs like “Get Started” or “Try Free” lead to proper next step (signup/onboarding or builder)
+
+🔗 Homepage to Onboarding Flow: Nano-Level Review
+✅ CTA Click Test:
+
+Click on all buttons:
+
+Ensure onClick handlers are firing
+
+Ensure users are redirected to correct route (/signup, /builder, etc.)
+
+Confirm transitions (animations, fade-ins) match design spec
+
+Ensure no dead links or broken routes
+
+✅ Page Transitions:
+
+Validate smooth page transitions (no white flashes or layout shifts)
+
+Loading states or skeleton screens should appear before builder or dashboard loads
+
+🔐 Authentication (Signup/Login) Nano Review
+✅ Form Functionality:
+
+Email validation must be instant with feedback
+
+Google OAuth must pop and connect correctly
+
+Password strength validation works and shows feedback
+
+Confirm Supabase Auth receives user on signup
+
+Redirect post-signup must land in dashboard or onboarding flow
+
+✅ UX:
+
+Fields aligned, labels styled correctly
+
+Login/Signup toggle works
+
+Mobile keyboards don’t overlap input fields (iOS and Android)
+
+Proper error messages (e.g. “Invalid email”, “Wrong password”)
+
+🎨 Post Builder UI/UX Review (Nano-Level)
+✅ Design Accuracy:
+
+Confirm builder layout matches pixel grid
+
+Drag-and-drop components snap correctly into layout
+
+Buttons, dropdowns, and form elements styled to 2025 design trends (glassmorphism, neumorphism, or bold flat design — based on theme)
+
+✅ Interaction Review:
+
+Every click or component addition triggers expected changes in UI state
+
+Real-time preview updates as content is edited
+
+Tab focus order is logical and keyboard-navigable
+
+AI-assisted text generation buttons work, spinner shows, and content is inserted
+
+Undo/redo works if supported
+
+📸 Media Upload + Supabase Storage Test
+✅ Upload Tests:
+
+Drag-and-drop and manual upload both work
+
+Files are stored in Supabase Storage
+
+Files are previewed instantly after upload
+
+File limits (type/size) are enforced correctly
+
+Uploaded assets are linked to correct post_id in DB
+
+✅ Storage Rules:
+
+File is only visible to the user who uploaded it (Supabase RLS)
+
+URLs are signed or public according to storage policy
+
+🧠 AI Story / Caption Builder Test
+✅ UX Flow:
+
+Keyword input → generate → result preview must work smoothly
+
+"Regenerate", "Tweak", or "Expand" options must:
+
+Provide alternate outputs
+
+Not duplicate or produce blank content
+
+Insert directly into content builder
+
+✅ Supabase Connection:
+
+Every generation stored in ai_generations table
+
+Associated with user_id and post_id
+
+📆 Scheduling / Publishing Flow QA
+✅ UI Functionality:
+
+Platform selection (TikTok, IG, YouTube, etc.) changes preview and input fields
+
+Schedule selector must:
+
+Offer calendar + time picker
+
+Prevent scheduling in the past
+
+Show timezone clearly
+
+Publish now button triggers publish API
+
+Status badges show correctly (Scheduled, Published, Failed)
+
+✅ API Integration:
+
+Confirm Supabase function triggers post-publish update
+
+Verify post data is sent to platform APIs (or logged as dummy for now)
+
+Response is saved and shown in UI
+
+💳 Payment Flow Testing (Stripe/Paddle)
+✅ Payment UX:
+
+Plans page loads plans from Supabase or config
+
+Click → Checkout opens Stripe securely
+
+After success:
+
+Redirect to dashboard
+
+Supabase payments table is updated
+
+users.plan field is set
+
+Billing Portal access works
+
+Downgrade/cancel feedback is reflected immediately
+
+📊 Dashboard + History UX QA
+✅ View Posts:
+
+List all past posts with:
+
+Status (Draft, Published, Scheduled)
+
+Platform icons
+
+Preview/click to open builder
+
+Filter by platform or date range
+
+Pagination or lazy load tested
+
+✅ Analytics (if present):
+
+Engagement stats pull from correct API
+
+Loading spinners shown while fetching
+
+Errors gracefully handled
+
+🔬 Testing and QA Summary
+✅ Required Tests:
+
+Click every button
+
+Form validation (manual + edge cases)
+
+Real-time Supabase connection and data sync
+
+All state transitions (draft → scheduled → published)
+
+Mobile and tablet touch interaction
+
+Dark/light mode behavior
+
+Disconnect scenarios (offline handling)
+
+Post-publish success/failure alerts
+
+File upload performance
+
+Onboarding progress persistence
+
+Payment retry handling
+
+🔁 Final QA Outcome Should Include:
+
+ ✅ UI 100% pixel matched to spec
+
+ ✅ Every click triggers valid logic
+
+ ✅ Supabase connected across users/posts/media/payments
+
+ ✅ No dummy data or broken flows remain
+
+ ✅ Mobile/tablet UX is optimized
+
+ ✅ Error handling is clear and visible
+
+ ✅ All external API integrations (TikTok, YouTube, Stripe) are tested
+
+ ✅ Post-publish flow is verified and live
+
+🧠 Bonus Automation (Optional):
+
+If you're using automated testing tools (e.g. Cypress, Playwright, or Chromatic for Storybook):
+
+Run regression tests on all user flows
+
+Visual regression test on homepage, post builder, and dashboard
+
+Simulate API failures and test fallback UI
+
+🚀 Ready to Launch Signal:
+
+Once this prompt is fully executed and all flows are reviewed from homepage to final publish, you will have a 2025-grade, pixel-perfect, fully-integrated MVP with real API + Supabase backend.
+
+Would you like me to generate a checklist version (PDF or Notion-style) of this QA plan for your team or AI agent system?

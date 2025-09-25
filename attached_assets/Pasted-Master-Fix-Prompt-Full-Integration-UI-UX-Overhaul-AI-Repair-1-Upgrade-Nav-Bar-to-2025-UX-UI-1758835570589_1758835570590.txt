@@ -1,0 +1,159 @@
+Master Fix Prompt: Full Integration + UI/UX Overhaul + AI Repair
+1. 🚀 Upgrade Nav Bar to 2025 UX/UI Standards
+🔧 Tasks:
+
+Redesign nav bar with 2025 UX trends:
+
+Sticky nav with scroll shrink behavior
+
+Smooth hover transitions, dropdowns (for pricing, features, resources)
+
+Mobile menu with animated hamburger and overlay background
+
+Integrated profile dropdown (if logged in) with avatar, settings, logout
+
+Add active route highlighting
+
+Use glassmorphism / gradient / dark-light toggle if consistent with brand
+
+✅ Outcome:
+
+Modern, fluid, responsive nav bar with clear call-to-actions, animations, and full route integration.
+
+2. 🌀 App Load Experience Overhaul
+🔧 Tasks:
+
+Add loading transitions between screens (fade-in/fade-out or loader overlay)
+
+Add initial app load animation (branding logo pulse or slide-in)
+
+Use skeleton loading states where data is fetched (e.g. post builder, dashboard)
+
+Implement route transitions using Framer Motion or similar animation libs
+
+✅ Outcome:
+
+App feels premium from first load, with smooth transitions and responsive feedback
+
+3. 🤖 Fix AI Story Generator (Connect AI Endpoint)
+🔧 Tasks:
+
+Locate AI endpoint for story generation (check env vars like AI_STORY_API_URL)
+
+Integrate it in the individual content builder:
+
+On “Generate Story” or similar action, call AI endpoint with user prompt
+
+Show loader while generating
+
+On success, inject content into story field
+
+On error, display toast or alert with failure message
+
+Add retry mechanism (if server is down or slow)
+
+✅ Outcome:
+
+AI story/caption generation works live inside the builder with connected backend
+
+4. 🧩 Fix Individual Content Builder (Ensure Full Integration)
+🔧 Tasks:
+
+Check if individual content builder has these issues:
+
+🔌 Missing binding to backend (Supabase or local state)
+
+🧠 No AI content generation
+
+🎯 Broken preview/render logic
+
+💾 Missing “Save”, “Publish”, or “Schedule” triggers
+
+Fix builder to include:
+
+✅ Platform selector
+
+✅ Text inputs (caption, hashtags, etc.)
+
+✅ Media upload (with Supabase Storage)
+
+✅ AI generation integration
+
+✅ Post preview
+
+✅ Schedule & publish
+
+Confirm every field updates post object correctly and syncs to Supabase
+
+✅ Outcome:
+
+The builder becomes fully functional and reliable with end-to-end post creation and AI story generation
+
+5. 🔌 Ensure Full Backend Integration (Supabase + APIs)
+🔧 Tasks:
+
+Confirm:
+
+🟢 All forms and builders send data to Supabase via insert or update
+
+🟢 AI endpoint is correctly called and response is used
+
+🟢 Media files are uploaded and stored in Supabase Storage
+
+🟢 User data is authenticated via Supabase Auth
+
+Test connections to:
+
+TikTok, Instagram, YouTube, etc. (dummy or live APIs)
+
+Stripe or payment provider
+
+Add Supabase logging (optional): log AI usage, post creation, media upload events
+
+✅ Outcome:
+
+App is tightly integrated — all features talk to backend and respond as expected
+
+6. 📲 Final UI Polish Pass (Across All Screens)
+🔧 Tasks:
+
+Apply consistent UI styles:
+
+Button styles (primary, secondary, disabled)
+
+Input styling (focus, error states)
+
+Card components for posts
+
+Modal styling with transitions
+
+Match 2025 design trends:
+
+Minimalist with depth
+
+Microinteractions (button press, field focus)
+
+Fluid animations on hover/click
+
+Elevated UX on mobile (bigger hit zones, clean nav)
+
+✅ Deliverables You Should Get from Agent/Builder:
+Feature	Status
+🔄 Nav Bar Redesigned	✅ Sticky, modern, responsive, animated
+💨 App Load Upgraded	✅ Smooth transitions, loading animations
+🤖 AI Story Working	✅ Connected to endpoint, content inserted
+🧩 Content Builder Fixed	✅ All fields working, AI/preview integrated
+🔌 Full Integration	✅ Supabase + APIs + Auth + Storage
+🧪 QA Tested	✅ Each flow tested, every click validated
+🎨 UI 2025 Polish	✅ Trend-matching, mobile-optimized, interactive
+🧠 Optional (Advanced Polishing):
+
+If you want to push to "premium SaaS-level polish":
+
+Add user onboarding tips with progress bar
+
+Add usage limits or feature locks based on payment plan
+
+Add toast feedback for every save/generate/publish action
+
+Add real-time post character count, preview modes

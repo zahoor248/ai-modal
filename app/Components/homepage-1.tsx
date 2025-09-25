@@ -45,24 +45,29 @@ export default function Page() {
         </div>
 
         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-300">
-          <a href="#features" className="hover:text-white">
+          <a href="#features" className="hover:text-white transition-colors duration-200">
             Features
           </a>
-          <a href="#trending" className="hover:text-white">
+          <a href="#trending" className="hover:text-white transition-colors duration-200">
             Trending
           </a>
-          <a href="#themes" className="hover:text-white">
+          <a href="#themes" className="hover:text-white transition-colors duration-200">
             Themes
           </a>
-          <a href="#pricing" className="hover:text-white">
+          <a href="#pricing" className="hover:text-white transition-colors duration-200">
             Pricing
           </a>
-          <a href="#faq" className="hover:text-white">
+          <a href="#faq" className="hover:text-white transition-colors duration-200">
             FAQ
           </a>
-          <button className="ml-4 px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold shadow-lg">
-            Start Writing
-          </button>
+          <div className="flex items-center gap-3 ml-4">
+            <button 
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
+              onClick={() => window.location.href = '/dashboard'}
+            >
+              Start Writing
+            </button>
+          </div>
         </nav>
       </header>
 
@@ -83,10 +88,16 @@ export default function Page() {
           </p>
 
           <div className="flex gap-4">
-            <button className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-indigo-600 shadow-xl font-semibold hover:scale-105 transition">
+            <button 
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-indigo-600 shadow-xl font-semibold hover:scale-105 hover:shadow-2xl transition-all duration-200 active:scale-95"
+              onClick={() => window.location.href = '/dashboard'}
+            >
               Start Free — No Card
             </button>
-            <button className="px-6 py-3 rounded-full border border-white/10 text-white/90 hover:bg-white/5 transition">
+            <button 
+              className="px-6 py-3 rounded-full border border-white/10 text-white/90 hover:bg-white/5 hover:border-white/20 transition-all duration-200"
+              onClick={() => window.location.href = '/dashboard'}
+            >
               Join Community
             </button>
           </div>
