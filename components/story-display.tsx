@@ -32,7 +32,6 @@ import { StoryEditor } from "@/components/story-editor";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useTypewriter } from "./TyprWriterEffect";
 import { createBrowserClient } from "@supabase/ssr";
-import { PDFBuilder } from "./ui/pdf-builder";
 
 interface Story {
   id: string;
@@ -65,7 +64,6 @@ export function StoryDisplay({
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showPDFMenu, setShowPDFMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [showPDFBuilder, setShowPDFBuilder] = useState(false);
 
   const [viewCount, setViewCount] = useState(
     Math.floor(Math.random() * 50) + 1
@@ -398,16 +396,6 @@ export function StoryDisplay({
                     )}
                   </Button>
 
-                  {/* Book Builder Button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => window.open(`/book-builder?story=${currentStory.id}`, '_blank')}
-                    className="flex items-center gap-2 bg-transparent hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-300 hover:scale-105 relative overflow-hidden group"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
-                    <FileText className="w-4 h-4" />
-                    Create Book
-                  </Button>
 
                   {/* Social Media Builder Button */}
                   <Button
@@ -464,14 +452,6 @@ export function StoryDisplay({
                       PDF
                     </Button>
 
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowPDFBuilder(!showPDFBuilder)}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="w-4 h-4" />
-                      Customize PDF
-                    </Button>
                     {/* PDF Menu */}
                     {showPDFMenu && (
                       <Card className="absolute top-full left-0 mt-2 w-64 z-50 shadow-2xl border bg-card animate-in fade-in slide-in-from-top-2 duration-300">
@@ -617,22 +597,6 @@ export function StoryDisplay({
           </Card>
         </div>
       </div>
-      {showPDFBuilder && (
-        <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-50 p-6 overflow-auto">
-          <div className="bg-card rounded-xl shadow-2xl w-full max-w-4xl p-6 relative">
-            <button
-              onClick={() => setShowPDFBuilder(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-red-500"
-            >
-              ✕
-            </button>
-            <PDFBuilder
-              story={currentStory.content}
-              title={currentStory.title}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

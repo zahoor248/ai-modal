@@ -225,13 +225,6 @@ const STORY_BUILDERS = [
     icon: Zap,
     link: '/generate?mode=quick'
   },
-  {
-    id: 'book-builder',
-    name: 'Book Builder',
-    description: 'Professional book creation with chapters, formatting, and export',
-    icon: FileText,
-    link: '/book-builder'
-  }
 ];
 
 export default function ModernDashboard() {
