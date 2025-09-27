@@ -5,7 +5,9 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import PaddleCheckoutButton from "@/components/PaddleCheckoutButton";
-
+import HeroSection from "@/components/homepage/HeroSection";
+import PremiumHeader from "@/components/homepage/PremiumHeader";
+import TrustBar from "@/components/homepage/TrustBar";
 /**
  * Full landing page that:
  * - Restores all sections you had
@@ -203,157 +205,9 @@ export default function HomePage() {
 
   return (
     <main className={`${appliedThemeClasses} min-h-screen  duration-300`}>
-      {/* MODERN NAVIGATION */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/10">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
-              src="/StoryBuds/StoryBuds-logo-transparent.png"
-              alt="StoryBuds"
-              className="h-10 w-auto object-contain"
-            />
-            <div className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              StoryBuds
-            </div>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <a href="#features" className="text-foreground/80 hover:text-primary transition-colors duration-200">
-              Features
-            </a>
-            <a href="#builders" className="text-foreground/80 hover:text-primary transition-colors duration-200">
-              Builders
-            </a>
-            <a href="#pricing" className="text-foreground/80 hover:text-primary transition-colors duration-200">
-              Pricing
-            </a>
-            <a href="#testimonials" className="text-foreground/80 hover:text-primary transition-colors duration-200">
-              Reviews
-            </a>
-            <div className="flex items-center gap-3">
-              <Link href="/login" className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors duration-200">
-                Sign In
-              </Link>
-              <Link href="/register" className="px-6 py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-lg">
-                Start Free
-              </Link>
-            </div>
-          </nav>
-        </div>
-      </header>
-
-      {/* PREMIUM HERO SECTION */}
-      <section className="relative py-20 lg:py-28 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl" />
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
-              ✨
-              <span>Trusted by 50,000+ storytellers worldwide</span>
-            </div>
-            
-            {/* Main Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-              <span className="block">Create</span>
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Extraordinary Stories
-              </span>
-              <span className="block">in Seconds</span>
-            </h1>
-            
-            <p className="text-xl text-foreground/70 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Transform your ideas into captivating tales with AI. From bedtime stories to published books, 
-              create content that moves hearts and minds.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Link 
-                href="/register" 
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-semibold text-lg hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
-              >
-                ✨
-                Start Creating Free
-              </Link>
-              <button className="px-8 py-4 border border-border/50 rounded-full font-medium text-lg hover:bg-accent/10 hover:border-primary/30 transition-all duration-200 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                Watch Demo (2 min)
-              </button>
-            </div>
-
-            {/* Social Proof */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-foreground/60">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 border-2 border-background" />
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500 border-2 border-background" />
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 border-2 border-background" />
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-400 to-red-500 border-2 border-background" />
-                </div>
-                <span className="ml-2 font-medium">50,000+ creators trust us</span>
-              </div>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                ))}
-                <span className="ml-2">4.9/5 from 2,000+ reviews</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative hidden md:block">
-          {/* Illustration placeholder (replace with proper SVG or image in /public for production) */}
-          <div className="rounded-2xl p-6 bg-white/6 backdrop-blur-md border border-white/8 shadow-2xl">
-            <div className="flex gap-4 items-start">
-              <div className="w-52 h-36 rounded-lg bg-gradient-to-br from-indigo-600 to-pink-500 flex items-center justify-center text-4xl">
-                <img
-                  src="/A-Special-Friendship-Story-With-Moral-for-Kids.jpg"
-                  className="w-full h-full object-cover rounded-md"
-                />
-              </div>
-              <div>
-                <h3 className="font-semibold text-2xl mt-2">
-                  The Little Star's Journey
-                </h3>
-                <p className="text-sm text-current/70 mt-3 line-clamp-4">
-                  Once upon a time, in a sky full of dreams, a small star
-                  learned how to shine by believing in a child who whispered
-                  wishes...
-                </p>
-
-                <div className="mt-4 flex gap-3">
-                  <button className="px-3 py-2 rounded-md bg-white/10">
-                    ▶ Listen
-                  </button>
-                  <button className="px-3 py-2 rounded-md bg-white/5">
-                    Save
-                  </button>
-                  <button className="px-3 py-2 rounded-md border border-white/10">
-                    Share
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* decorative orbs */}
-          <div className="absolute -bottom-8 -left-6 w-28 h-28 rounded-full bg-gradient-to-br from-pink-500 to-indigo-600 blur-3xl opacity-60" />
-          <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-green-300 blur-2xl opacity-40" />
-        </div>
-      </section>
-
-      {/* TESTIMONIALS SECTION */}
-      <section id="testimonials" className="py-20 bg-gradient-to-br from-muted/10 to-transparent">
+      <PremiumHeader/>
+<HeroSection />
+     <section id="testimonials" className="py-20 bg-gradient-to-br from-muted/10 to-transparent">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium mb-6">
@@ -433,6 +287,12 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <TrustBar />
+      {/* MODERN NAVIGATION */}
+  
+
+      {/* TESTIMONIALS SECTION */}
+ 
 
       {/* HOW IT WORKS - PREMIUM DESIGN */}
       <section id="how-it-works" className="py-20 relative">

@@ -26,7 +26,6 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
       
       {/* Animated Background Blobs */}
       <motion.div
